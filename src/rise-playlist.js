@@ -114,7 +114,13 @@ export default class RisePlaylist extends RiseElement {
       const playlistItems = info.addedNodes.filter(node => node.tagName === "RISE-PLAYLIST-ITEM");
 
       playlistItems.forEach(element => {
-        this.schedule.items.push({duration: parseInt(element.getAttribute("duration"), 10) || 10, playUntilDone: element.hasAttribute("play-until-done"), element});
+        const scheduleItem = {
+          duration: parseInt(element.getAttribute("duration"), 10) || 10,
+          playUntilDone: element.hasAttribute("play-until-done"),
+          element
+        };
+
+        this.schedule.items.push(scheduleItem);
       });
 
       this.schedule.items = this.schedule.items.filter(item => !info.removedNodes.includes(item.element));
