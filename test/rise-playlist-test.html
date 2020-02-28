@@ -25,12 +25,12 @@
     <test-fixture id="StaticValueTestFixture">
       <template>
         <rise-playlist items='[{
-          "duration": 20,
-          "transitionType": "fadeIn",
+          "duration": 1,
+          "transition-type": "fadeIn",
           "element": {
-            "tag": "rise-embedded-template",
-            "arguments": {
-              "templateId": "a429c126-598d-4251-9c0e-b49821056608"
+            "tagName": "rise-embedded-template",
+            "attributes": {
+              "template-id": "a429c126-598d-4251-9c0e-b49821056608"
             }
           }
         }]'>
@@ -38,16 +38,166 @@
       </template>
     </test-fixture>
 
+    <test-fixture id="NestedElementsTestFixture">
+      <template>
+        <rise-playlist>
+          <rise-playlist-item duration="5" transition-type="fadeIn">
+            <rise-embedded-template id="first" template-id="ba89703cf3df3379b124b199a97dc37af354e3e1"></rise-embedded-template>
+          </rise-playlist-item>
+          <rise-playlist-item play-until-done transition-type="fadeIn">
+            <rise-embedded-template id="second" template-id="24198274875578bed3a3282f19ebde588e540e86"></rise-embedded-template>
+          </rise-playlist-item>
+        </rise-playlist>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="MixedItemsAttributeAndElementsTestFixture">
+      <template>
+        <rise-playlist items='[{
+          "duration": 20,
+          "transition-type": "fadeIn",
+          "element": {
+            "tagName": "rise-embedded-template",
+            "attributes": {
+              "template-id": "8d517e618b10991a995e53e334f707fc246de9cc"
+            }
+          }
+        }]'>
+          <rise-playlist-item play-until-done transition-type="fadeIn">
+            <rise-embedded-template id="second" template-id="24198274875578bed3a3282f19ebde588e540e86"></rise-embedded-template>
+          </rise-playlist-item>
+        </rise-playlist>
+      </template>
+    </test-fixture>
+
     <script type="module">
       suite('rise-playlist', () => {
-        let element = null;
 
-        setup(() => {
-          element = fixture('StaticValueTestFixture');
+        suite('static items attribute', () => {
+          let element = null;
+
+          setup(() => {
+            element = fixture('StaticValueTestFixture');
+          });
+
+          test('setting "items" attribute on the element works', (done) => {
+            flush(() => {
+              assert.equal(element.items.length, 1);
+              assert.equal(element.schedule.items.length, 1);
+              done();
+            });
+          });
+
+          test('invalid items should not be added in schedule', (done) => {
+
+            const good = {
+              "duration": 2,
+              "transition-type": "fadeIn",
+              "element": {
+                "tagName": "rise-embedded-template",
+                "attributes": {
+                  "template-id": "a429c126-598d-4251-9c0e-b49821056608"
+                }
+              }
+            };
+
+            const missingElement = {
+              "duration": 3,
+              "transition-type": "fadeIn"
+            };
+
+            const missingTagName = {
+              "duration": 4,
+              "transition-type": "fadeIn",
+              "element": {
+                "attributes": {
+                  "template-id": "a429c126-598d-4251-9c0e-b49821056608"
+                }
+              }
+            };
+
+            const emptyTagName = {
+              "duration": 5,
+              "transition-type": "fadeIn",
+              "element": {
+                "tagName": "",
+                "attributes": {
+                  "template-id": "a429c126-598d-4251-9c0e-b49821056608"
+                }
+              }
+            };
+
+            const items = [good, missingElement, missingTagName, emptyTagName];
+
+            element.items = items;
+
+            flush(() => {
+              assert.equal(element.items.length, 4);
+              assert.equal(element.schedule.items.length, 1);
+              done();
+            });
+          });
+
         });
 
-        test('setting "items" attribute on the element works', () => {
-          assert.equal(element.items.length, 1);
+        suite('nested html items', () => {
+          let element = null;
+
+          setup(() => {
+            element = fixture('NestedElementsTestFixture');
+          });
+
+          test('nested elements are parsed into schedule items', (done) => {
+            flush(() => {
+              assert.equal(element.schedule.items.length, 2);
+              done();
+            });
+          });
+
+          test('adding nested elements adds to schedule items', (done) => {
+
+            const newItem = document.createElement('rise-playlist-item');
+            newItem.setAttribute('duration', 32);
+            newItem.appendChild(document.createElement('rise-embedded-template'));
+
+            element.appendChild(newItem);
+
+            flush(() => {
+              assert.equal(element.schedule.items.length, 3);
+              done();
+            });
+          });
+
+          test('removing nested elements removes from schedule items', (done) => {
+
+            element.removeChild(element.children[0])
+
+            flush(() => {
+              assert.equal(element.schedule.items.length, 1);
+              done();
+            });
+          });
+
+        });
+
+        suite('mixed nested html and items attribute', () => {
+          let element = null;
+
+          setup(() => {
+            element = fixture('MixedItemsAttributeAndElementsTestFixture');
+          });
+
+          test('only items attribute are parsed into schedule items', (done) => {
+            flush(() => {
+              assert.equal(element.schedule.items.length, 1);
+
+              const lastItem = element.schedule.items[0];
+
+              assert.equal(lastItem.duration, 20);
+
+              done();
+            });
+          });
         });
 
       });

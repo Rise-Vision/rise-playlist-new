@@ -22,21 +22,80 @@
       }
     }
   </script>
+
+  <style type="text/css">
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    rise-playlist {
+      width: 800px;
+      height: 600px;
+    }
+  </style>
 </head>
 
 <body>
+  <div id="container">
+    <rise-playlist id="htmlNotation">
+      <rise-playlist-item duration="5" transition-type="fadeIn">
+        <rise-embedded-template id="first" template-id="ba89703cf3df3379b124b199a97dc37af354e3e1"></rise-embedded-template>
+      </rise-playlist-item>
+      <rise-playlist-item play-until-done transition-type="fadeIn">
+        <rise-embedded-template id="second" template-id="24198274875578bed3a3282f19ebde588e540e86"></rise-embedded-template>
+      </rise-playlist-item>
+    </rise-playlist>
 
-  <rise-playlist items='[{
-    "duration": 20,
-    "transitionType": "fadeIn",
-    "element": {
-      "tag": "rise-embedded-template",
-      "arguments": {
-        "templateId": "a429c126-598d-4251-9c0e-b49821056608"
+    <rise-playlist id="mixed" items='[{
+      "duration": 20,
+      "transition-type": "fadeIn",
+      "element": {
+        "tagName": "rise-embedded-template",
+        "attributes": {
+          "template-id": "8d517e618b10991a995e53e334f707fc246de9cc"
+        }
       }
-    }
-  }]'>
-  </rise-playlist>
+    }]'>
+      <rise-playlist-item duration="5" transition-type="fadeIn">
+        <rise-embedded-template id="first" template-id="ba89703cf3df3379b124b199a97dc37af354e3e1"></rise-embedded-template>
+      </rise-playlist-item>
+    </rise-playlist>
+
+    <rise-playlist id="json" items='[{
+      "duration": 20,
+      "transition-type": "fadeIn",
+      "element": {
+        "tagName": "rise-embedded-template",
+        "attributes": {
+          "template-id": "8d517e618b10991a995e53e334f707fc246de9cc"
+        }
+      }
+    },
+    {
+      "duration": 15,
+      "transition-type": "normal",
+      "element": {
+        "tagName": "rise-embedded-template",
+        "attributes": {
+          "template-id": "ba89703cf3df3379b124b199a97dc37af354e3e1"
+        }
+      }
+    },
+    {
+      "duration": 10,
+      "play-until-done": true,
+      "transition-type": "normal",
+      "element": {
+        "tagName": "rise-embedded-template",
+        "attributes": {
+          "template-id": "24198274875578bed3a3282f19ebde588e540e86"
+        }
+      }
+    }]'>
+    </rise-playlist>
+  </div>
 
   <script>
     function configureComponents() {
