@@ -56,8 +56,20 @@ export default class RisePlaylist extends RiseElement {
     this._setVersion( version );
   }
 
+  _removeAllItems() {
+    while (this.firstChild) {
+      this.removeChild(this.firstChild);
+    }
+  }
+
   _itemsChanged(items) {
-    items.map(item => {
+    this._removeAllItems();
+
+    const validItems = items.filter(item => {
+      return item.element && item.element.tagName && item.element.tagName !== "";
+    });
+
+    validItems.map(item => {
 
       const playListItem = document.createElement("rise-playlist-item");
 

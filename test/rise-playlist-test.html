@@ -25,7 +25,7 @@
     <test-fixture id="StaticValueTestFixture">
       <template>
         <rise-playlist items='[{
-          "duration": 20,
+          "duration": 1,
           "transition-type": "fadeIn",
           "element": {
             "tagName": "rise-embedded-template",
@@ -87,6 +87,57 @@
               done();
             });
           });
+
+          test('invalid items should not be added in schedule', (done) => {
+
+            const good = {
+              "duration": 2,
+              "transition-type": "fadeIn",
+              "element": {
+                "tagName": "rise-embedded-template",
+                "attributes": {
+                  "template-id": "a429c126-598d-4251-9c0e-b49821056608"
+                }
+              }
+            };
+
+            const missingElement = {
+              "duration": 3,
+              "transition-type": "fadeIn"
+            };
+
+            const missingTagName = {
+              "duration": 4,
+              "transition-type": "fadeIn",
+              "element": {
+                "attributes": {
+                  "template-id": "a429c126-598d-4251-9c0e-b49821056608"
+                }
+              }
+            };
+
+            const emptyTagName = {
+              "duration": 5,
+              "transition-type": "fadeIn",
+              "element": {
+                "tagName": "",
+                "attributes": {
+                  "template-id": "a429c126-598d-4251-9c0e-b49821056608"
+                }
+              }
+            };
+
+            const items = [good, missingElement, missingTagName, emptyTagName];
+
+            element.items = items;
+
+            flush(() => {
+              assert.equal(element.items.length, 4);
+              assert.equal(element.schedule.items.length, 1);
+              done();
+            });
+          });
+
         });
 
         suite('nested html items', () => {
@@ -127,7 +178,6 @@
             });
           });
 
-
         });
 
         suite('mixed nested html and items attribute', () => {
@@ -137,18 +187,14 @@
             element = fixture('MixedItemsAttributeAndElementsTestFixture');
           });
 
-          test('nested elements and attribute are parsed into schedule items', (done) => {
+          test('only items attribute are parsed into schedule items', (done) => {
             flush(() => {
-              assert.equal(element.schedule.items.length, 2);
-              done();
-            });
-          });
+              assert.equal(element.schedule.items.length, 1);
 
-          test('attribute items are placed last in schedule items', (done) => {
-            flush(() => {
-              const lastItem = element.schedule.items[1];
+              const lastItem = element.schedule.items[0];
 
               assert.equal(lastItem.duration, 20);
+
               done();
             });
           });
