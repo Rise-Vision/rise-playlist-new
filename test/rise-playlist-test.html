@@ -102,6 +102,32 @@
               done();
             });
           });
+
+          test('adding nested elements adds to schedule items', (done) => {
+
+            const newItem = document.createElement('rise-playlist-item');
+            newItem.setAttribute('duration', 32);
+            newItem.appendChild(document.createElement('rise-embedded-template'));
+
+            element.appendChild(newItem);
+
+            flush(() => {
+              assert.equal(element.schedule.items.length, 3);
+              done();
+            });
+          });
+
+          test('removing nested elements removes from schedule items', (done) => {
+
+            element.removeChild(element.children[0])
+
+            flush(() => {
+              assert.equal(element.schedule.items.length, 1);
+              done();
+            });
+          });
+
+
         });
 
         suite('mixed nested html and items attribute', () => {
