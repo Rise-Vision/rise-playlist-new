@@ -39,6 +39,14 @@
           sandbox.restore();
         });
 
+        test('should not play when items is empty', () => {
+          schedule.items = [];
+
+          schedule.start();
+
+          assert.equal(transitionHandler.transition.called, false);
+        });
+
         test('should play single item', () => {
           const item = {
             duration: 10,

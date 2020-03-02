@@ -33,6 +33,10 @@ class Schedule {
   }
 
   play() {
+    if (!this.items || this.items.length === 0) {
+      return;
+    }
+
     clearTimeout(this.itemDurationTimer);
 
     let nextItem = this.items.shift();
