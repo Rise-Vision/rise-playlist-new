@@ -14,7 +14,7 @@ class TransitionHandler {
 
 }
 
-export default class Schedule {
+class Schedule {
   constructor(transitionHandler = new TransitionHandler()) {
     this.transitionHandler = transitionHandler;
     this.items = [];
@@ -50,3 +50,5 @@ export default class Schedule {
     this.itemDurationTimer= setTimeout(() => this.play(), nextItem.duration * 1000);
   }
 }
+
+export { Schedule, TransitionHandler };
