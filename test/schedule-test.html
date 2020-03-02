@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>rise-playlist test</title>
+
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../node_modules/@polymer/test-fixture/test-fixture.js"></script>
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script src="../node_modules/sinon/pkg/sinon.js"></script>
+    <script src="../node_modules/wct-mocha/wct-mocha.js"></script>
+  </head>
+  <body>
+
+    <script type="module">
+      import { Schedule, TransitionHandler } from '../src/schedule.js';
+
+      suite('schedule', () => {
+
+        const sandbox = sinon.createSandbox();
+        let clock = null;
+        let schedule = null;
+        let transitionHandler = null;
+
+        setup(() => {
+          clock = sinon.useFakeTimers();
+
+          transitionHandler = new TransitionHandler();
+          sandbox.stub(transitionHandler, "transition");
+
+          schedule = new Schedule(transitionHandler);
+        });
+
+        teardown(() => {
+          clock.restore();
+          sandbox.restore();
+        });
+
+        test('should not play when items is empty', () => {
+          schedule.items = [];
+
+          schedule.start();
+
+          assert.equal(transitionHandler.transition.called, false);
+        });
+
+        test('should play single item', () => {
+          const item = {
+            duration: 10,
+            playUntilDone: false,
+            element: document.createElement('rise-playlist-item')
+          };
+
+          schedule.items = [item];
+
+          schedule.start();
+
+          assert.equal(transitionHandler.transition.calledWith(null, item.element), true);
+        });
+
+        test('should play multiple items with duration', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: document.createElement('rise-playlist-item')
+          };
+
+          const secontItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: document.createElement('rise-playlist-item')
+          };
+
+          schedule.items = [firstItem, secontItem];
+
+          schedule.start();
+
+          assert.equal(transitionHandler.transition.calledWith(null, firstItem.element), true);
+
+          clock.tick((firstItem.duration + 1) * 1000);
+
+          assert.equal(transitionHandler.transition.calledWith(firstItem.element, secontItem.element), true);
+
+          clock.tick((secontItem.duration + 1) * 1000);
+
+          assert.equal(transitionHandler.transition.calledWith(secontItem.element, firstItem.element), true);
+
+        });
+
+      });
+    </script>
+
+  </body>
+</html>

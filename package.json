@@ -29,10 +29,11 @@
     "rise-common-component": "git://github.com/Rise-Vision/rise-common-component.git#v1.0.1"
   },
   "devDependencies": {
-    "eslint": "^5.16.0",
     "@polymer/test-fixture": "^4.0.2",
     "chai": "^4.2.0",
+    "eslint": "^5.16.0",
     "mocha": "^5.2.0",
+    "sinon": "^9.0.0",
     "wct-mocha": "^1.0.0"
   }
 }
