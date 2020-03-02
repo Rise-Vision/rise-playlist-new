@@ -3,12 +3,18 @@ import { html } from "@polymer/polymer";
 import { FlattenedNodesObserver } from "@polymer/polymer/lib/utils/flattened-nodes-observer.js";
 import { RiseElement } from "rise-common-component/src/rise-element.js";
 import { version } from "./rise-playlist-version.js";
-import Schedule from "./schedule.js";
+import { Schedule } from "./schedule.js";
 
 class RisePlaylistItem extends RiseElement {
 
   static get template() {
     return html`
+      <style>
+        :host {
+          width: 100%;
+          height: 100%;
+        }
+      </style>
       <slot></slot>
     `;
   }
