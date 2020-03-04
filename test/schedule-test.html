@@ -16,6 +16,7 @@
   <body>
 
     <script type="module">
+      import { RisePlaylistItem } from '../src/rise-playlist.js';
       import { Schedule, TransitionHandler } from '../src/schedule.js';
 
       suite('schedule', () => {
@@ -65,16 +66,16 @@
           const firstItem = {
             duration: 10,
             playUntilDone: false,
-            element: document.createElement('rise-playlist-item')
+            element: new RisePlaylistItem()
           };
 
-          const secontItem = {
+          const secondItem = {
             duration: 12,
             playUntilDone: false,
-            element: document.createElement('rise-playlist-item')
+            element: new RisePlaylistItem()
           };
 
-          schedule.items = [firstItem, secontItem];
+          schedule.items = [firstItem, secondItem];
 
           schedule.start();
 
@@ -82,12 +83,91 @@
 
           clock.tick((firstItem.duration + 1) * 1000);
 
-          assert.equal(transitionHandler.transition.calledWith(firstItem.element, secontItem.element), true);
+          assert.equal(transitionHandler.transition.calledWith(firstItem.element, secondItem.element), true);
 
-          clock.tick((secontItem.duration + 1) * 1000);
+          clock.tick((secondItem.duration + 1) * 1000);
 
-          assert.equal(transitionHandler.transition.calledWith(secontItem.element, firstItem.element), true);
+          assert.equal(transitionHandler.transition.calledWith(secondItem.element, firstItem.element), true);
+        });
 
+        test('should stop rise-playlist-item elements when playlist stops', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: new RisePlaylistItem()
+          };
+          sandbox.stub(firstItem.element, "stop");
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: new RisePlaylistItem()
+          };
+          sandbox.stub(secondItem.element, "stop");
+
+          schedule.items = [firstItem, secondItem];
+
+          schedule.stop();
+
+          assert.equal(firstItem.element.stop.called, true);
+          assert.equal(secondItem.element.stop.called, true);
+        });
+
+      });
+
+      suite('transitions', () => {
+        const sandbox = sinon.createSandbox();
+
+        let transitionHandler = null;
+
+        setup(() => {
+          transitionHandler = new TransitionHandler();
+        });
+
+        teardown(() => sandbox.restore());
+
+        test('should stop previous item and start the next', () => {
+
+          const previous = {
+            style: {
+              display: {}
+            },
+            stop: sandbox.spy()
+          };
+
+          const next = {
+            style: {
+              display: {}
+            },
+            play: sandbox.spy()
+          };
+
+          transitionHandler.transition(previous, next);
+
+          assert.equal(previous.stop.called, true);
+          assert.equal(next.play.called, true);
+        });
+
+
+        test('should hide previous item and show the next', () => {
+          const previous = {
+            style: {
+              display: {}
+            },
+            stop: sandbox.spy()
+          };
+
+          const next = {
+            style: {
+              display: {}
+            },
+            play: sandbox.spy()
+          };
+
+          transitionHandler.transition(previous, next);
+
+          assert.equal(previous.style.display, "none");
+          assert.equal(next.style.display, "block");
         });
 
       });
