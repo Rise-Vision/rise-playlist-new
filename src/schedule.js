@@ -5,10 +5,12 @@ class TransitionHandler {
   transition(from, to) {
     if (from && from.style) {
       from.style.display = "none";
+      from.stop();
     }
 
     if (to && to.style) {
       to.style.display = "block";
+      to.play();
     }
   }
 
@@ -23,11 +25,19 @@ class Schedule {
   }
 
   start() {
-    this.stop();
+    this.reset();
     this.play();
   }
 
   stop() {
+    this.reset();
+    this.items.forEach(item => {
+      item.element.style.display = "none";
+      item.element.stop();
+    });
+  }
+
+  reset() {
     clearTimeout(this.itemDurationTimer);
     this.playingItem = null;
   }

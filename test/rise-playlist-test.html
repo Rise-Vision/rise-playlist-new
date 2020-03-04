@@ -10,6 +10,7 @@
     <script src="../node_modules/@polymer/test-fixture/test-fixture.js"></script>
     <script src="../node_modules/mocha/mocha.js"></script>
     <script src="../node_modules/chai/chai.js"></script>
+    <script src="../node_modules/sinon/pkg/sinon.js"></script>
     <script src="../node_modules/wct-mocha/wct-mocha.js"></script>
 
     <script type="text/javascript">
@@ -71,14 +72,19 @@
     </test-fixture>
 
     <script type="module">
+      import { RisePlaylistItem } from '../src/rise-playlist.js';
+
       suite('rise-playlist', () => {
 
         suite('static items attribute', () => {
           let element = null;
+          const sandbox = sinon.createSandbox();
 
           setup(() => {
             element = fixture('StaticValueTestFixture');
           });
+
+          teardown(() => sandbox.restore());
 
           test('setting "items" attribute on the element works', (done) => {
             flush(() => {
@@ -138,6 +144,21 @@
             });
           });
 
+          test('should start schedule on "rise-presentation-play" event', () => {
+            sandbox.stub(element.schedule, "start");
+
+            element.dispatchEvent(new Event("rise-presentation-play"));
+
+            assert.equal(element.schedule.start.called, true);
+          });
+
+          test('should stop schedule on "rise-presentation-stop" event', () => {
+            sandbox.stub(element.schedule, "stop");
+
+            element.dispatchEvent(new Event("rise-presentation-stop"));
+
+            assert.equal(element.schedule.stop.called, true);
+          });
         });
 
         suite('nested html items', () => {
@@ -197,6 +218,33 @@
 
               done();
             });
+          });
+        });
+
+        suite('rise-playlist-item', () => {
+
+          test('play should send "rise-playlist-play" event to children', (done) => {
+            const item = new RisePlaylistItem();
+            const child = document.createElement('rise-embedded-template');
+            item.appendChild(child);
+
+            child.addEventListener("rise-playlist-play", () => {
+              done();
+            });
+
+            item.play();
+          });
+
+          test('stop should send "rise-playlist-stop" event to children', (done) => {
+            const item = new RisePlaylistItem();
+            const child = document.createElement('rise-embedded-template');
+            item.appendChild(child);
+
+            child.addEventListener("rise-playlist-stop", () => {
+              done();
+            });
+
+            item.stop();
           });
         });
 

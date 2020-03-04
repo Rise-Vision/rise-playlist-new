@@ -5,7 +5,7 @@ import { RiseElement } from "rise-common-component/src/rise-element.js";
 import { version } from "./rise-playlist-version.js";
 import { Schedule } from "./schedule.js";
 
-class RisePlaylistItem extends RiseElement {
+export class RisePlaylistItem extends RiseElement {
 
   static get template() {
     return html`
@@ -35,6 +35,21 @@ class RisePlaylistItem extends RiseElement {
       }
     }
   }
+
+  play() {
+    this._sendEventToChildren("rise-playlist-play");
+  }
+
+  stop() {
+    this._sendEventToChildren("rise-playlist-stop");
+  }
+
+  _sendEventToChildren(eventName) {
+    for (let i = 0; i < this.children.length; i++) {
+      this.children[i].dispatchEvent(new Event(eventName));
+    }
+  }
+
 }
 
 customElements.define("rise-playlist-item", RisePlaylistItem);
@@ -60,6 +75,13 @@ export default class RisePlaylist extends RiseElement {
     super();
     this.schedule = new Schedule();
     this._setVersion( version );
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener( "rise-presentation-play", () => this.schedule.start());
+    this.addEventListener( "rise-presentation-stop", () => this.schedule.stop());
   }
 
   _removeAllItems() {
@@ -130,7 +152,6 @@ export default class RisePlaylist extends RiseElement {
       });
 
       this.schedule.items = this.schedule.items.filter(item => !info.removedNodes.includes(item.element));
-      this.schedule.start();
     });
   }
 
