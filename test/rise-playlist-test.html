@@ -72,6 +72,7 @@
     </test-fixture>
 
     <script type="module">
+      import { RiseElement } from "rise-common-component/src/rise-element.js";
       import { RisePlaylistItem } from '../src/rise-playlist.js';
 
       suite('rise-playlist', () => {
@@ -159,6 +160,26 @@
 
             assert.equal(element.schedule.stop.called, true);
           });
+
+          test('should send done event when schedule is done and has the play-until-done attribute', () => {
+            // stub super class method
+            sandbox.stub(RiseElement.prototype, "_sendDoneEvent");
+
+            element.setAttribute('play-until-done', true);
+            element._onScheduleDone();
+
+            assert.equal(element._sendDoneEvent.called, true);
+          });
+
+          test('should not send done event when schedule is done but play-until-done attribute is not set', () => {
+            // stub super class method
+            sandbox.stub(RiseElement.prototype, "_sendDoneEvent");
+
+            element._onScheduleDone();
+
+            assert.equal(element._sendDoneEvent.called, false);
+          });
+
         });
 
         suite('nested html items', () => {
