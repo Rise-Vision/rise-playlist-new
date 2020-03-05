@@ -45,6 +45,7 @@ export class RisePlaylistItem extends RiseElement {
   }
 
   _sendEventToChildren(eventName) {
+    // RisePlaylistItem should only have a single child, but it sends the event for all children just to be safe
     for (let i = 0; i < this.children.length; i++) {
       this.children[i].dispatchEvent(new Event(eventName));
     }
