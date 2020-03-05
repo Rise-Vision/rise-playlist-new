@@ -171,6 +171,30 @@
           assert.equal(secondItem.element.stop.called, true);
         });
 
+        test('should keep items order when stop/starts', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: new RisePlaylistItem()
+          };
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: new RisePlaylistItem()
+          };
+
+          schedule.items = [firstItem, secondItem];
+
+          clock.tick((firstItem.duration + 1) * 1000);
+
+          schedule.stop();
+          schedule.start();
+
+          assert.equal(schedule.items[0], firstItem);
+          assert.equal(schedule.items[1], secondItem);
+        });
+
       });
 
       suite('transitions', () => {
