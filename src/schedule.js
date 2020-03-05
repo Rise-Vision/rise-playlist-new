@@ -17,8 +17,9 @@ class TransitionHandler {
 }
 
 class Schedule {
-  constructor(transitionHandler = new TransitionHandler()) {
+  constructor(transitionHandler = new TransitionHandler(), doneListener = () => {}) {
     this.transitionHandler = transitionHandler;
+    this.doneListener = doneListener;
     this.items = [];
     this.playingItem = null;
     this.itemDurationTimer = null;
@@ -40,6 +41,7 @@ class Schedule {
   reset() {
     clearTimeout(this.itemDurationTimer);
     this.playingItem = null;
+    this.firstItem = this.items ? this.items[0] : undefined;
   }
 
   play() {
@@ -59,6 +61,10 @@ class Schedule {
       const previousElement = previousItem ? previousItem.element : null;
 
       this.transitionHandler.transition(previousElement, nextItem.element);
+    }
+
+    if (previousItem && nextItem === this.firstItem) {
+      this.doneListener();
     }
 
     this.itemDurationTimer= setTimeout(() => this.play(), nextItem.duration * 1000);
