@@ -17,10 +17,13 @@ class TransitionHandler {
 }
 
 class Schedule {
-  constructor(transitionHandler = new TransitionHandler()) {
+  constructor(transitionHandler = new TransitionHandler(), doneListener = () => {}) {
     this.transitionHandler = transitionHandler;
+    this.doneListener = doneListener;
     this.items = [];
+    this.playingItems = [];
     this.playingItem = null;
+    this.firstItem = null;
     this.itemDurationTimer = null;
   }
 
@@ -31,7 +34,7 @@ class Schedule {
 
   stop() {
     this.reset();
-    this.items.forEach(item => {
+    this.playingItems.forEach(item => {
       item.element.style.display = "none";
       item.element.stop();
     });
@@ -40,17 +43,19 @@ class Schedule {
   reset() {
     clearTimeout(this.itemDurationTimer);
     this.playingItem = null;
+    this.firstItem = this.items ? this.items[0] : undefined;
+    this.playingItems = this.items ? this.items.slice() : [];
   }
 
   play() {
-    if (!this.items || this.items.length === 0) {
+    if (!this.playingItems || this.playingItems.length === 0) {
       return;
     }
 
     clearTimeout(this.itemDurationTimer);
 
-    let nextItem = this.items.shift();
-    this.items.push(nextItem);
+    let nextItem = this.playingItems.shift();
+    this.playingItems.push(nextItem);
 
     let previousItem = this.playingItem;
     this.playingItem = nextItem;
@@ -59,6 +64,10 @@ class Schedule {
       const previousElement = previousItem ? previousItem.element : null;
 
       this.transitionHandler.transition(previousElement, nextItem.element);
+    }
+
+    if (previousItem && nextItem === this.firstItem) {
+      this.doneListener();
     }
 
     this.itemDurationTimer= setTimeout(() => this.play(), nextItem.duration * 1000);

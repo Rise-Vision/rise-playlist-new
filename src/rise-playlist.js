@@ -45,6 +45,7 @@ export class RisePlaylistItem extends RiseElement {
   }
 
   _sendEventToChildren(eventName) {
+    // RisePlaylistItem should only have a single child, but it sends the event for all children just to be safe
     for (let i = 0; i < this.children.length; i++) {
       this.children[i].dispatchEvent(new Event(eventName));
     }
@@ -74,6 +75,7 @@ export default class RisePlaylist extends RiseElement {
   constructor() {
     super();
     this.schedule = new Schedule();
+    this.schedule.doneListener = () => this._onScheduleDone();
     this._setVersion( version );
   }
 
@@ -82,6 +84,12 @@ export default class RisePlaylist extends RiseElement {
 
     this.addEventListener( "rise-presentation-play", () => this.schedule.start());
     this.addEventListener( "rise-presentation-stop", () => this.schedule.stop());
+  }
+
+  _onScheduleDone() {
+    if (this.hasAttribute("play-until-done")) {
+      super._sendDoneEvent(true);
+    }
   }
 
   _removeAllItems() {

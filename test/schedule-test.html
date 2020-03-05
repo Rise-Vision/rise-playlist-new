@@ -90,6 +90,64 @@
           assert.equal(transitionHandler.transition.calledWith(secondItem.element, firstItem.element), true);
         });
 
+        test('should call done listener when it finishes playing single item', () => {
+          const item = {
+            duration: 10,
+            playUntilDone: false,
+            element: document.createElement('rise-playlist-item')
+          };
+
+          schedule.items = [item];
+
+          schedule.doneListener = sandbox.spy();
+
+          schedule.start();
+
+          assert.equal(schedule.doneListener.called, false);
+
+          clock.tick((item.duration + 1) * 1000);
+
+          assert.equal(schedule.doneListener.calledOnce, true);
+
+          clock.tick((item.duration + 1) * 1000);
+
+          assert.equal(schedule.doneListener.calledTwice, true);
+        });
+
+        test('should call done listener when it finishes playing multiple items', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: new RisePlaylistItem()
+          };
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: new RisePlaylistItem()
+          };
+
+          schedule.items = [firstItem, secondItem];
+
+          schedule.doneListener = sandbox.spy();
+
+          schedule.start();
+
+          assert.equal(schedule.doneListener.called, false);
+
+          clock.tick((firstItem.duration + 1) * 1000);
+
+          assert.equal(schedule.doneListener.calledOnce, false);
+
+          clock.tick((secondItem.duration + 1) * 1000);
+
+          assert.equal(schedule.doneListener.calledOnce, true);
+
+          clock.tick((firstItem.duration + secondItem.duration + 1) * 1000);
+
+          assert.equal(schedule.doneListener.calledTwice, true);
+        });
+
         test('should stop rise-playlist-item elements when playlist stops', () => {
           const firstItem = {
             duration: 10,
@@ -111,6 +169,30 @@
 
           assert.equal(firstItem.element.stop.called, true);
           assert.equal(secondItem.element.stop.called, true);
+        });
+
+        test('should keep items order when stop/starts', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: new RisePlaylistItem()
+          };
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: new RisePlaylistItem()
+          };
+
+          schedule.items = [firstItem, secondItem];
+
+          clock.tick((firstItem.duration + 1) * 1000);
+
+          schedule.stop();
+          schedule.start();
+
+          assert.equal(schedule.items[0], firstItem);
+          assert.equal(schedule.items[1], secondItem);
         });
 
       });
