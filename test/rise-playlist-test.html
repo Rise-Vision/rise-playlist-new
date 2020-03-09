@@ -267,6 +267,41 @@
 
             item.stop();
           });
+
+          test('should set done when child sends "report-done"', () => {
+            const item = new RisePlaylistItem();
+            item.playUntilDone = true;
+
+            const child = document.createElement('rise-embedded-template');
+            item.appendChild(child);
+
+            item.play();
+
+            assert.equal(item.isDone(), false);
+
+            child.dispatchEvent(new Event("report-done"));
+
+            assert.equal(item.isDone(), true);
+          });
+
+          test('should not set done when child sends "report-done" when item is stopped', () => {
+            const item = new RisePlaylistItem();
+            item.playUntilDone = true;
+
+            const child = document.createElement('rise-embedded-template');
+            item.appendChild(child);
+
+            item.play();
+
+            assert.equal(item.isDone(), false);
+
+            item.stop();
+
+            child.dispatchEvent(new Event("report-done"));
+
+            assert.equal(item.isDone(), false);
+          });
+
         });
 
       });
