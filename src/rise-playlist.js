@@ -36,18 +36,46 @@ export class RisePlaylistItem extends RiseElement {
     }
   }
 
+  constructor() {
+    super();
+    this._done = false;
+    this._isPlaying = false;
+  }
+
+  ready() {
+    super.ready();
+    if (this.firstElementChild && this.playUntilDone) {
+      this.firstElementChild.addEventListener("report-done", () => this._setDone());
+    }
+  }
+
+  _setDone() {
+    if (this._isPlaying) {
+      this._done = true;
+    }
+  }
+
+  isDone() {
+    return this._done;
+  }
+
+  resetDone() {
+    this._done = false;
+  }
+
   play() {
-    this._sendEventToChildren("rise-playlist-play");
+    this._sendEventToChild("rise-playlist-play");
+    this._isPlaying = true;
   }
 
   stop() {
-    this._sendEventToChildren("rise-playlist-stop");
+    this._sendEventToChild("rise-playlist-stop");
+    this._isPlaying = false;
   }
 
-  _sendEventToChildren(eventName) {
-    // RisePlaylistItem should only have a single child, but it sends the event for all children just to be safe
-    for (let i = 0; i < this.children.length; i++) {
-      this.children[i].dispatchEvent(new Event(eventName));
+  _sendEventToChild(eventName) {
+    if (this.firstElementChild) {
+      this.firstElementChild.dispatchEvent(new Event(eventName));
     }
   }
 

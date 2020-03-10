@@ -54,6 +54,15 @@ class Schedule {
 
     clearTimeout(this.itemDurationTimer);
 
+    if (this.playingItem && this.playingItem.playUntilDone) {
+      if (this.playingItem.element.isDone()) {
+        this.playingItem.element.resetDone();
+      } else {
+        this.itemDurationTimer = setTimeout(() => this.play(), 1000);
+        return;
+      }
+    }
+
     let nextItem = this.playingItems.shift();
     this.playingItems.push(nextItem);
 
@@ -70,7 +79,7 @@ class Schedule {
       this.doneListener();
     }
 
-    this.itemDurationTimer= setTimeout(() => this.play(), nextItem.duration * 1000);
+    this.itemDurationTimer = setTimeout(() => this.play(), nextItem.playUntilDone ? 1000 : nextItem.duration * 1000);
   }
 }
 

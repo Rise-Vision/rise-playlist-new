@@ -30,7 +30,7 @@
           clock = sinon.useFakeTimers();
 
           transitionHandler = new TransitionHandler();
-          sandbox.stub(transitionHandler, "transition");
+          sandbox.stub(transitionHandler, "transition").callThrough();
 
           schedule = new Schedule(transitionHandler);
         });
@@ -112,6 +112,75 @@
           clock.tick((item.duration + 1) * 1000);
 
           assert.equal(schedule.doneListener.calledTwice, true);
+        });
+
+        test('should play multiple items until done', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: new RisePlaylistItem()
+          };
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: true,
+            element: new RisePlaylistItem()
+          };
+
+          schedule.items = [firstItem, secondItem];
+
+          schedule.start();
+
+          assert.equal(transitionHandler.transition.calledWith(null, firstItem.element), true);
+
+          clock.tick((firstItem.duration + 1) * 1000);
+
+          assert.equal(transitionHandler.transition.calledWith(firstItem.element, secondItem.element), true);
+
+          clock.tick((secondItem.duration + 1) * 1000);
+
+          assert.equal(transitionHandler.transition.calledWith(secondItem.element, firstItem.element), false);
+
+          secondItem.element._setDone();
+
+          clock.tick(1000);
+
+          assert.equal(transitionHandler.transition.calledWith(secondItem.element, firstItem.element), true);
+        });
+
+        test('should play single play until done item', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: true,
+            element: new RisePlaylistItem()
+          };
+
+          schedule.doneListener = sandbox.spy();
+
+          schedule.items = [firstItem];
+
+          schedule.start();
+
+          assert.equal(transitionHandler.transition.calledWith(null, firstItem.element), true);
+
+          clock.tick((firstItem.duration + 1) * 1000);
+
+          firstItem.element._setDone();
+
+          clock.tick(1000);
+
+          assert.equal(schedule.doneListener.calledOnce, true);
+
+          clock.tick((firstItem.duration + 1) * 1000);
+
+          assert.equal(schedule.doneListener.calledOnce, true);
+
+          firstItem.element._setDone();
+
+          clock.tick(1000);
+
+          assert.equal(schedule.doneListener.calledTwice, true);
+
         });
 
         test('should call done listener when it finishes playing multiple items', () => {
