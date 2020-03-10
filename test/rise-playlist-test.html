@@ -275,6 +275,8 @@
             const child = document.createElement('rise-embedded-template');
             item.appendChild(child);
 
+            item.ready();
+
             item.play();
 
             assert.equal(item.isDone(), false);
@@ -290,6 +292,8 @@
 
             const child = document.createElement('rise-embedded-template');
             item.appendChild(child);
+
+            item.ready();
 
             item.play();
 

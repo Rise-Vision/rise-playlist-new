@@ -39,7 +39,20 @@ export class RisePlaylistItem extends RiseElement {
   constructor() {
     super();
     this._done = false;
-    this._setDone = () => this._done = true;
+    this._isPlaying = false;
+  }
+
+  ready() {
+    super.ready();
+    if (this.firstElementChild && this.playUntilDone) {
+      this.firstElementChild.addEventListener("report-done", () => this._setDone());
+    }
+  }
+
+  _setDone() {
+    if (this._isPlaying) {
+      this._done = true;
+    }
   }
 
   isDone() {
@@ -52,16 +65,12 @@ export class RisePlaylistItem extends RiseElement {
 
   play() {
     this._sendEventToChild("rise-playlist-play");
-    if (this.firstElementChild && this.playUntilDone) {
-      this.firstElementChild.addEventListener("report-done", this._setDone);
-    }
+    this._isPlaying = true;
   }
 
   stop() {
     this._sendEventToChild("rise-playlist-stop");
-    if (this.firstElementChild && this.playUntilDone) {
-      this.firstElementChild.removeEventListener("report-done", this._setDone);
-    }
+    this._isPlaying = false;
   }
 
   _sendEventToChild(eventName) {

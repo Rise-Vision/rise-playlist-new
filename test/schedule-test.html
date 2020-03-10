@@ -30,7 +30,7 @@
           clock = sinon.useFakeTimers();
 
           transitionHandler = new TransitionHandler();
-          sandbox.stub(transitionHandler, "transition");
+          sandbox.stub(transitionHandler, "transition").callThrough();
 
           schedule = new Schedule(transitionHandler);
         });
