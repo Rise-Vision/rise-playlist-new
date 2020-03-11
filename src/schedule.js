@@ -1,17 +1,65 @@
 /* eslint-disable newline-after-var */
-
-class TransitionHandler {
-
-  transition(from, to) {
+class DefaultTransition {
+  run(from, to) {
     if (from && from.style) {
       from.style.display = "none";
-      from.stop();
     }
 
     if (to && to.style) {
       to.style.display = "block";
+    }
+  }
+}
+
+class FadeInTransition {
+  run(from, to) {
+    if (from && from.style) {
+      from.style.display = "none";
+    }
+
+    to.style.display = "block";
+    to.style.opacity = 0;
+    requestAnimationFrame(() => {
+      to.style.transition = "opacity 1s";
+      to.style.opacity = 1;
+    });
+  }
+}
+
+class ZoomInTransition {
+  run(from, to) {
+    if (from && from.style) {
+      from.style.display = "none";
+    }
+
+    to.style.display = "block";
+    to.style.transform = "scale(0)";
+    requestAnimationFrame(() => {
+      to.style.transition = "transform 1s";
+      to.style.transform = "scale(1)";
+    });
+  }
+}
+
+const transitions = {
+  "normal": new DefaultTransition(),
+  "fadeIn": new FadeInTransition(),
+  "zoomIn": new ZoomInTransition()
+}
+
+class TransitionHandler {
+
+  transition(from, to) {
+    if (from) {
+      from.stop();
+    }
+
+    if (to) {
       to.play();
     }
+
+    const transition = transitions[from ? from.transitionType : "normal"];
+    transition.run(from, to);
   }
 
 }
