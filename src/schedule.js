@@ -9,6 +9,7 @@ class DefaultTransition {
       element.style.opacity = 1;
       element.style.left = 0;
       element.style.top = 0;
+      element.style.transform = "none"
       element.style.visibility = "hidden";
 
       element.classList = "";
@@ -114,12 +115,60 @@ class SlideFromRightTransition extends HorizontalSlideTransition  {
   }
 }
 
+class VerticalSlideTransition extends DefaultTransition {
+
+  constructor(fromMultiplier, toMultiplier) {
+    super();
+    this.fromMultiplier = fromMultiplier;
+    this.toMultiplier = toMultiplier;
+  }
+
+  run(from, to) {
+    if (from) {
+      from.style.top = "0px";
+      requestAnimationFrame(() => {
+        from.style.transition = "top 1s";
+        from.style.top = `${this.fromMultiplier * from.parentElement.clientHeight}px`;
+      });
+
+      from.addEventListener("transitionend", () => {
+        super.reset(from);
+        from.stop();
+      }, { once: true });
+    }
+
+    to.play();
+
+    to.style.visibility = "visible";
+    to.style.top = `${this.toMultiplier * to.parentElement.clientHeight}px`;
+
+    requestAnimationFrame(() => {
+      to.style.transition = "top 1s";
+      to.style.top = "0px";
+    });
+  }
+}
+
+class SlideFromBottomTransition extends VerticalSlideTransition  {
+  constructor() {
+    super(-1, 1);
+  }
+}
+
+class SlideFromTopTransition extends VerticalSlideTransition  {
+  constructor() {
+    super(1, -1);
+  }
+}
+
 const transitions = {
   "normal": new DefaultTransition(),
   "fadeIn": new FadeInTransition(),
   "zoomIn": new ZoomInTransition(),
   "slideFromLeft": new SlideFromLeftTransition(),
-  "slideFromRight": new SlideFromRightTransition()
+  "slideFromRight": new SlideFromRightTransition(),
+  "slideFromBottom": new SlideFromBottomTransition(),
+  "slideFromTop": new SlideFromTopTransition()
 }
 
 class TransitionHandler {
