@@ -19,10 +19,12 @@ class DefaultTransition {
     this.reset(from);
 
     if (from && from.style) {
+      from.stop();
       from.style.visibility = "hidden";
     }
 
     if (to && to.style) {
+      to.play();
       to.style.visibility = "visible";
     }
   }
@@ -30,7 +32,8 @@ class DefaultTransition {
 
 class FadeInTransition extends DefaultTransition {
   run(from, to) {
-    super.reset(from);
+
+    to.play();
 
     to.style.visibility = "visible";
     to.style.opacity = 0;
@@ -38,12 +41,18 @@ class FadeInTransition extends DefaultTransition {
       to.style.transition = "opacity 1s";
       to.style.opacity = 1;
     });
+
+    to.addEventListener("transitionend", () => {
+      super.reset(from);
+      from.stop();
+    }, { once: true });
   }
 }
 
 class ZoomInTransition extends DefaultTransition {
   run(from, to) {
-    super.reset(from);
+
+    to.play();
 
     to.style.visibility = "visible";
     to.style.transform = "scale(0)";
@@ -51,23 +60,40 @@ class ZoomInTransition extends DefaultTransition {
       to.style.transition = "transform 1s";
       to.style.transform = "scale(1)";
     });
+
+    to.addEventListener("transitionend", () => {
+      super.reset(from);
+      from.stop();
+    }, { once: true });
   }
 }
 
-class SlideFromLeftTransition extends DefaultTransition  {
+class HorizontalSlideTransition extends DefaultTransition {
+
+  constructor(fromMultiplier, toMultiplier) {
+    super();
+    this.fromMultiplier = fromMultiplier;
+    this.toMultiplier = toMultiplier;
+  }
+
   run(from, to) {
     if (from) {
       from.style.left = "0px";
       requestAnimationFrame(() => {
         from.style.transition = "left 1s";
-        from.style.left = `${to.parentElement.clientWidth}px`;
+        from.style.left = `${this.fromMultiplier * from.parentElement.clientWidth}px`;
       });
 
-      from.addEventListener("transitionend", () => super.reset(from), { once: true });
+      from.addEventListener("transitionend", () => {
+        super.reset(from);
+        from.stop();
+      }, { once: true });
     }
 
+    to.play();
+
     to.style.visibility = "visible";
-    to.style.left = `${-to.parentElement.clientWidth}px`;
+    to.style.left = `${this.toMultiplier * to.parentElement.clientWidth}px`;
 
     requestAnimationFrame(() => {
       to.style.transition = "left 1s";
@@ -76,24 +102,29 @@ class SlideFromLeftTransition extends DefaultTransition  {
   }
 }
 
+class SlideFromLeftTransition extends HorizontalSlideTransition  {
+  constructor() {
+    super(1, -1);
+  }
+}
+
+class SlideFromRightTransition extends HorizontalSlideTransition  {
+  constructor() {
+    super(-1, 1);
+  }
+}
+
 const transitions = {
   "normal": new DefaultTransition(),
   "fadeIn": new FadeInTransition(),
   "zoomIn": new ZoomInTransition(),
-  "slideFromLeft": new SlideFromLeftTransition()
+  "slideFromLeft": new SlideFromLeftTransition(),
+  "slideFromRight": new SlideFromRightTransition()
 }
 
 class TransitionHandler {
 
   transition(from, to) {
-    if (from) {
-      from.stop();
-    }
-
-    if (to) {
-      to.play();
-    }
-
     const transitionType = to.transitionType;
     const transition = transitions[transitionType];
 
