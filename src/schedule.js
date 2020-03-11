@@ -1,23 +1,38 @@
+/* eslint-disable no-console */
 /* eslint-disable newline-after-var */
 class DefaultTransition {
+
+  reset(element) {
+    if (element && element.style) {
+      element.style.transition = "none";
+      element.style.overflow = "hidden";
+      element.style.opacity = 1;
+      element.style.left = 0;
+      element.style.top = 0;
+      element.style.visibility = "hidden";
+
+      element.classList = "";
+    }
+  }
+
   run(from, to) {
+    this.reset(from);
+
     if (from && from.style) {
-      from.style.display = "none";
+      from.style.visibility = "hidden";
     }
 
     if (to && to.style) {
-      to.style.display = "block";
+      to.style.visibility = "visible";
     }
   }
 }
 
-class FadeInTransition {
+class FadeInTransition extends DefaultTransition {
   run(from, to) {
-    if (from && from.style) {
-      from.style.display = "none";
-    }
+    super.reset(from);
 
-    to.style.display = "block";
+    to.style.visibility = "visible";
     to.style.opacity = 0;
     requestAnimationFrame(() => {
       to.style.transition = "opacity 1s";
@@ -26,13 +41,11 @@ class FadeInTransition {
   }
 }
 
-class ZoomInTransition {
+class ZoomInTransition extends DefaultTransition {
   run(from, to) {
-    if (from && from.style) {
-      from.style.display = "none";
-    }
+    super.reset(from);
 
-    to.style.display = "block";
+    to.style.visibility = "visible";
     to.style.transform = "scale(0)";
     requestAnimationFrame(() => {
       to.style.transition = "transform 1s";
@@ -41,10 +54,33 @@ class ZoomInTransition {
   }
 }
 
+class SlideFromLeftTransition extends DefaultTransition  {
+  run(from, to) {
+    if (from) {
+      from.style.left = "0px";
+      requestAnimationFrame(() => {
+        from.style.transition = "left 1s";
+        from.style.left = `${to.parentElement.clientWidth}px`;
+      });
+
+      from.addEventListener("transitionend", () => super.reset(from), { once: true });
+    }
+
+    to.style.visibility = "visible";
+    to.style.left = `${-to.parentElement.clientWidth}px`;
+
+    requestAnimationFrame(() => {
+      to.style.transition = "left 1s";
+      to.style.left = "0px";
+    });
+  }
+}
+
 const transitions = {
   "normal": new DefaultTransition(),
   "fadeIn": new FadeInTransition(),
-  "zoomIn": new ZoomInTransition()
+  "zoomIn": new ZoomInTransition(),
+  "slideFromLeft": new SlideFromLeftTransition()
 }
 
 class TransitionHandler {
@@ -58,7 +94,10 @@ class TransitionHandler {
       to.play();
     }
 
-    const transition = transitions[from ? from.transitionType : "normal"];
+    const transitionType = to.transitionType;
+    const transition = transitions[transitionType];
+
+    console.log(`RisePlaylist - transition ${from} ${to} ${transitionType}`);
     transition.run(from, to);
   }
 

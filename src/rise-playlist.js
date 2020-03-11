@@ -13,6 +13,10 @@ export class RisePlaylistItem extends RiseElement {
         :host {
           width: 100%;
           height: 100%;
+          position: absolute;
+          visibility: hidden;
+          top: 0px;
+          left: 0px;
         }
       </style>
       <slot></slot>
@@ -87,6 +91,12 @@ export default class RisePlaylist extends RiseElement {
 
   static get template() {
     return html`
+      <style>
+        :host {
+          position: relative;
+          overflow: hidden;
+        }
+      </style>
       <slot></slot>
     `;
   }
@@ -166,14 +176,6 @@ export default class RisePlaylist extends RiseElement {
   connectedCallback() {
     super.connectedCallback();
     this._observer = new FlattenedNodesObserver(this, (info) => {
-
-      const hideElement = element => {
-        if (element.style) {
-          element.style.display = "none";
-        }
-      };
-
-      info.addedNodes.forEach(hideElement);
 
       const playlistItems = info.addedNodes.filter(node => node.tagName === "RISE-PLAYLIST-ITEM");
 
