@@ -163,7 +163,6 @@ class TransitionHandler {
     const transitionType = to.transitionType;
     const transition = transitions[transitionType];
 
-    console.log(`RisePlaylist - transition ${from} ${to} ${transitionType}`);
     transition.run(from, to);
   }
 

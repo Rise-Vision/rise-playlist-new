@@ -270,8 +270,11 @@
         const sandbox = sinon.createSandbox();
 
         let transitionHandler = null;
+        let clock = null;
 
         setup(() => {
+          clock = sinon.useFakeTimers();
+
           transitionHandler = new TransitionHandler();
         });
 
@@ -279,21 +282,16 @@
 
         test('should stop previous item and start the next', () => {
 
-          const previous = {
-            style: {
-              display: {}
-            },
-            stop: sandbox.spy()
-          };
+          const previous = new RisePlaylistItem();
+          sandbox.stub(previous, "stop");
 
-          const next = {
-            style: {
-              display: {}
-            },
-            play: sandbox.spy()
-          };
+          const next = new RisePlaylistItem();
+          sandbox.stub(next, "play");
 
           transitionHandler.transition(previous, next);
+
+          // transition duration
+          clock.tick(1000);
 
           assert.equal(previous.stop.called, true);
           assert.equal(next.play.called, true);
@@ -301,24 +299,19 @@
 
 
         test('should hide previous item and show the next', () => {
-          const previous = {
-            style: {
-              display: {}
-            },
-            stop: sandbox.spy()
-          };
+          const previous = new RisePlaylistItem();
+          sandbox.stub(previous, "stop");
 
-          const next = {
-            style: {
-              display: {}
-            },
-            play: sandbox.spy()
-          };
+          const next = new RisePlaylistItem();
+          sandbox.stub(next, "play");
 
           transitionHandler.transition(previous, next);
 
-          assert.equal(previous.style.display, "none");
-          assert.equal(next.style.display, "block");
+          // transition duration
+          clock.tick(1000);
+
+          assert.equal(previous.style.visibility, "hidden");
+          assert.equal(next.style.visibility, "visible");
         });
 
       });
