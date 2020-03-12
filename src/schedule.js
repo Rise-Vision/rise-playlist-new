@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-console */
-/* eslint-disable newline-after-var */
 class DefaultTransition {
 
   constructor(durationInSeconds = 1) {
@@ -26,7 +23,7 @@ class DefaultTransition {
 
     this.animate(from, to);
 
-    setTimeout(() => this.onTransitionEnd(from, to), this.durationInSeconds * 1000);
+    setTimeout(() => this.onTransitionEnd(from), this.durationInSeconds * 1000);
   }
 
   animate(from, to) {
@@ -41,7 +38,7 @@ class DefaultTransition {
     to.play();
   }
 
-  onTransitionEnd(from, to) {
+  onTransitionEnd(from) {
     if (from) {
       this.reset(from);
       from.stop();
@@ -216,9 +213,11 @@ class Schedule {
     }
 
     let nextItem = this.playingItems.shift();
+
     this.playingItems.push(nextItem);
 
     let previousItem = this.playingItem;
+
     this.playingItem = nextItem;
 
     if (!previousItem || previousItem !== nextItem) {
