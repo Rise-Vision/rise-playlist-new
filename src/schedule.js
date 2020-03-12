@@ -183,10 +183,7 @@ class Schedule {
 
   stop() {
     this.reset();
-    this.playingItems.forEach(item => {
-      item.element.style.display = "none";
-      item.element.stop();
-    });
+    this.playingItems.forEach(item => item.element.stop());
   }
 
   reset() {
