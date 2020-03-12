@@ -51,7 +51,7 @@ class FadeInTransition extends DefaultTransition {
     to.style.visibility = "visible";
     to.style.opacity = 0;
     requestAnimationFrame(() => {
-      to.style.transition = "opacity 1s";
+      to.style.transition = `opacity ${this.durationInSeconds}s`;
       to.style.opacity = 1;
     });
   }
@@ -62,7 +62,7 @@ class ZoomInTransition extends DefaultTransition {
     to.style.visibility = "visible";
     to.style.transform = "scale(0)";
     requestAnimationFrame(() => {
-      to.style.transition = "transform 1s";
+      to.style.transition = `transform ${this.durationInSeconds}s`;
       to.style.transform = "scale(1)";
     });
   }
@@ -80,7 +80,7 @@ class HorizontalSlideTransition extends DefaultTransition {
     if (from) {
       from.style.left = "0px";
       requestAnimationFrame(() => {
-        from.style.transition = "left 1s";
+        from.style.transition = `left ${this.durationInSeconds}s`;
         from.style.left = `${this.fromMultiplier * from.parentElement.clientWidth}px`;
       });
     }
@@ -88,7 +88,7 @@ class HorizontalSlideTransition extends DefaultTransition {
     to.style.visibility = "visible";
     to.style.left = `${this.toMultiplier * to.parentElement.clientWidth}px`;
     requestAnimationFrame(() => {
-      to.style.transition = "left 1s";
+      to.style.transition = `left ${this.durationInSeconds}s`;
       to.style.left = "0px";
     });
   }
@@ -118,7 +118,7 @@ class VerticalSlideTransition extends DefaultTransition {
     if (from) {
       from.style.top = "0px";
       requestAnimationFrame(() => {
-        from.style.transition = "top 1s";
+        from.style.transition = `top ${this.durationInSeconds}s`;
         from.style.top = `${this.fromMultiplier * from.parentElement.clientHeight}px`;
       });
     }
@@ -126,7 +126,7 @@ class VerticalSlideTransition extends DefaultTransition {
     to.style.visibility = "visible";
     to.style.top = `${this.toMultiplier * to.parentElement.clientHeight}px`;
     requestAnimationFrame(() => {
-      to.style.transition = "top 1s";
+      to.style.transition = `top ${this.durationInSeconds}s`;
       to.style.top = "0px";
     });
   }
