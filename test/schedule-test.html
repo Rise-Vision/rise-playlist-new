@@ -16,6 +16,7 @@
   <body>
 
     <script type="module">
+      import RisePlaylist from '../src/rise-playlist.js';
       import { RisePlaylistItem } from '../src/rise-playlist.js';
       import { Schedule, TransitionHandler } from '../src/schedule.js';
 
@@ -290,13 +291,12 @@
 
           transitionHandler.transition(previous, next);
 
-          // transition duration
+          // run transition
           clock.tick(1000);
 
           assert.equal(previous.stop.called, true);
           assert.equal(next.play.called, true);
         });
-
 
         test('should hide previous item and show the next', () => {
           const previous = new RisePlaylistItem();
@@ -307,11 +307,163 @@
 
           transitionHandler.transition(previous, next);
 
-          // transition duration
+          // run transition
           clock.tick(1000);
 
           assert.equal(previous.style.visibility, "hidden");
           assert.equal(next.style.visibility, "visible");
+        });
+
+        test('should transition with fade in', () => {
+          const previous = new RisePlaylistItem();
+          sandbox.stub(previous, "stop");
+
+          const next = new RisePlaylistItem();
+          next.transitionType = "fadeIn";
+          sandbox.stub(next, "play");
+
+          transitionHandler.transition(previous, next);
+
+          assert.equal(next.style.opacity, 0);
+
+         // run transition
+          clock.tick(1000);
+
+          assert.equal(next.style.opacity, 1);
+        });
+
+        test('should transition with zoom in', () => {
+          const previous = new RisePlaylistItem();
+          sandbox.stub(previous, "stop");
+
+          const next = new RisePlaylistItem();
+          next.transitionType = "zoomIn";
+          sandbox.stub(next, "play");
+
+          transitionHandler.transition(previous, next);
+
+          assert.equal(next.style.transform, "scale(0)");
+
+          // run transition
+          clock.tick(1000);
+
+          assert.equal(next.style.transform, "scale(1)");
+        });
+
+        test('should transition with slide from left', () => {
+          const parent = {clientWidth: 100};
+
+          const previous = new RisePlaylistItem();
+          sandbox.stub(previous, "stop");
+          sandbox.stub(previous, "parentElement").value(parent);
+
+          const next = new RisePlaylistItem();
+          next.transitionType = "slideFromLeft";
+          sandbox.stub(next, "play");
+          sandbox.stub(next, "parentElement").value(parent);
+
+          transitionHandler.transition(previous, next);
+
+          assert.equal(previous.style.left, "0px");
+          assert.equal(next.style.left, "-100px");
+
+          // run transition
+          clock.tick(100);
+
+          assert.equal(previous.style.left, "100px");
+          assert.equal(next.style.left, "0px");
+
+          // finish execution (force run onTransitionEnd)
+          clock.tick(900);
+
+          assert.equal(previous.style.left, "0px");
+        });
+
+        test('should transition with slide from right', () => {
+          const parent = {clientWidth: 100};
+
+          const previous = new RisePlaylistItem();
+          sandbox.stub(previous, "stop");
+          sandbox.stub(previous, "parentElement").value(parent);
+
+          const next = new RisePlaylistItem();
+          next.transitionType = "slideFromRight";
+          sandbox.stub(next, "play");
+          sandbox.stub(next, "parentElement").value(parent);
+
+          transitionHandler.transition(previous, next);
+
+          assert.equal(previous.style.left, "0px");
+          assert.equal(next.style.left, "100px");
+
+          // run transition
+          clock.tick(100);
+
+          assert.equal(previous.style.left, "-100px");
+          assert.equal(next.style.left, "0px");
+
+          // finish execution (force run onTransitionEnd)
+          clock.tick(900);
+
+          assert.equal(previous.style.left, "0px");
+        });
+
+        test('should transition with slide from bottom', () => {
+          const parent = {clientHeight: 100};
+
+          const previous = new RisePlaylistItem();
+          sandbox.stub(previous, "stop");
+          sandbox.stub(previous, "parentElement").value(parent);
+
+          const next = new RisePlaylistItem();
+          next.transitionType = "slideFromBottom";
+          sandbox.stub(next, "play");
+          sandbox.stub(next, "parentElement").value(parent);
+
+          transitionHandler.transition(previous, next);
+
+          assert.equal(previous.style.top, "0px");
+          assert.equal(next.style.top, "100px");
+
+          // run transition
+          clock.tick(100);
+
+          assert.equal(previous.style.top, "-100px");
+          assert.equal(next.style.top, "0px");
+
+          // finish execution (force run onTransitionEnd)
+          clock.tick(900);
+
+          assert.equal(previous.style.top, "0px");
+        });
+
+        test('should transition with slide from top', () => {
+          const parent = {clientHeight: 100};
+
+          const previous = new RisePlaylistItem();
+          sandbox.stub(previous, "stop");
+          sandbox.stub(previous, "parentElement").value(parent);
+
+          const next = new RisePlaylistItem();
+          next.transitionType = "slideFromTop";
+          sandbox.stub(next, "play");
+          sandbox.stub(next, "parentElement").value(parent);
+
+          transitionHandler.transition(previous, next);
+
+          assert.equal(previous.style.top, "0px");
+          assert.equal(next.style.top, "-100px");
+
+          // run transition
+          clock.tick(100);
+
+          assert.equal(previous.style.top, "100px");
+          assert.equal(next.style.top, "0px");
+
+          // finish execution (force run onTransitionEnd)
+          clock.tick(900);
+
+          assert.equal(previous.style.top, "0px");
         });
 
       });
