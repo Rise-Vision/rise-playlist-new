@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { html } from "@polymer/polymer";
 import { FlattenedNodesObserver } from "@polymer/polymer/lib/utils/flattened-nodes-observer.js";
 import { RiseElement } from "rise-common-component/src/rise-element.js";

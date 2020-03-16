@@ -144,6 +144,70 @@ class SlideFromTopTransition extends VerticalSlideTransition  {
   }
 }
 
+class StripesTransition extends DefaultTransition {
+  animate(from, to) {
+
+    const overlay = document.createElement("div");
+
+    overlay.style.position = "absolute";
+    overlay.style.left = 0;
+    overlay.style.top = 0;
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+
+    this.setUpBackground(overlay);
+
+    to.appendChild(overlay);
+
+    to.style.visibility = "visible";
+
+    this.animateStripes(overlay);
+  }
+
+  animateStripes(overlay) {
+    let animationId = null, step = 0, frames = 60;
+
+    function animateStep() {
+      step = step + 1;
+      let percent = step / frames;
+
+      overlay.style.setProperty("--step", `${(percent*100).toFixed(2)}%`);
+
+      if(!(step % frames)) {
+        cancelAnimationFrame(animationId);
+        overlay.remove();
+        return;
+      }
+
+      animationId = requestAnimationFrame(animateStep);
+    }
+
+    animateStep();
+  }
+
+  setUpBackground() { }
+}
+
+class VerticalStripesTransition extends StripesTransition {
+
+  setUpBackground(overlay) {
+    overlay.style.background = "linear-gradient(90deg, #00000000 var(--step, 0%), #000000ff 0)";
+    overlay.style.backgroundSize = "10%";
+    overlay.style.backgroundRepeat = "repeat-x";
+  }
+
+}
+
+class HorizontalStripesTransition extends StripesTransition {
+
+  setUpBackground(overlay) {
+    overlay.style.background = "linear-gradient(to bottom, #00000000 var(--step, 0%), #000000ff 0)";
+    overlay.style.backgroundSize = "100% 10%";
+    overlay.style.backgroundRepeat = "repeat-y";
+  }
+
+}
+
 const transitions = {
   "normal": new DefaultTransition(),
   "fadeIn": new FadeInTransition(),
@@ -151,7 +215,9 @@ const transitions = {
   "slideFromLeft": new SlideFromLeftTransition(),
   "slideFromRight": new SlideFromRightTransition(),
   "slideFromBottom": new SlideFromBottomTransition(),
-  "slideFromTop": new SlideFromTopTransition()
+  "slideFromTop": new SlideFromTopTransition(),
+  "stripesVertical": new VerticalStripesTransition(),
+  "stripesHorizontal": new HorizontalStripesTransition()
 }
 
 class TransitionHandler {
