@@ -466,6 +466,49 @@
           assert.equal(previous.style.top, "0px");
         });
 
+        test('should transition with vertical stripes', () => {
+          const previous = new RisePlaylistItem();
+          sandbox.stub(previous, "stop");
+
+          const next = new RisePlaylistItem();
+          next.transitionType = "stripesVertical";
+          sandbox.stub(next, "play");
+
+          transitionHandler.transition(previous, next);
+
+          let overlay = next.firstChild;
+
+          assert.equal(overlay.style.backgroundRepeat, "repeat-x");
+
+          clock.tick(1000);
+
+          overlay = next.firstChild;
+
+          assert.equal(overlay, null);
+        });
+
+        test('should transition with horizontal stripes', () => {
+          const previous = new RisePlaylistItem();
+          sandbox.stub(previous, "stop");
+
+          const next = new RisePlaylistItem();
+          next.transitionType = "stripesHorizontal";
+          sandbox.stub(next, "play");
+
+          transitionHandler.transition(previous, next);
+
+          let overlay = next.firstChild;
+
+          assert.equal(overlay.style.backgroundRepeat, "repeat-y");
+
+          clock.tick(1000);
+
+          overlay = next.firstChild;
+
+          assert.equal(overlay, null);
+        });
+
+
       });
     </script>
 
