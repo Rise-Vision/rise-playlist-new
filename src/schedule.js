@@ -144,7 +144,7 @@ class SlideFromTopTransition extends VerticalSlideTransition  {
   }
 }
 
-class VerticalStripesTransition extends DefaultTransition {
+class StripesTransition extends DefaultTransition {
   animate(from, to) {
 
     const overlay = document.createElement("div");
@@ -154,9 +154,8 @@ class VerticalStripesTransition extends DefaultTransition {
     overlay.style.top = 0;
     overlay.style.width = "100%";
     overlay.style.height = "100%";
-    overlay.style.background = "linear-gradient(90deg, #00000000 var(--step, 0%), #000000ff 0)";
-    overlay.style.backgroundSize = "10%";
-    overlay.style.backgroundRepeat = "repeat-x";
+
+    this.setUpBackground(overlay);
 
     to.appendChild(overlay);
 
@@ -185,6 +184,28 @@ class VerticalStripesTransition extends DefaultTransition {
 
     animateStep();
   }
+
+  setUpBackground() { }
+}
+
+class VerticalStripesTransition extends StripesTransition {
+
+  setUpBackground(overlay) {
+    overlay.style.background = "linear-gradient(90deg, #00000000 var(--step, 0%), #000000ff 0)";
+    overlay.style.backgroundSize = "10%";
+    overlay.style.backgroundRepeat = "repeat-x";
+  }
+
+}
+
+class HorizontalStripesTransition extends StripesTransition {
+
+  setUpBackground(overlay) {
+    overlay.style.background = "linear-gradient(to bottom, #00000000 var(--step, 0%), #000000ff 0)";
+    overlay.style.backgroundSize = "100% 10%";
+    overlay.style.backgroundRepeat = "repeat-y";
+  }
+
 }
 
 const transitions = {
@@ -195,7 +216,8 @@ const transitions = {
   "slideFromRight": new SlideFromRightTransition(),
   "slideFromBottom": new SlideFromBottomTransition(),
   "slideFromTop": new SlideFromTopTransition(),
-  "stripesVertical": new VerticalStripesTransition()
+  "stripesVertical": new VerticalStripesTransition(),
+  "stripesHorizontal": new HorizontalStripesTransition()
 }
 
 class TransitionHandler {
