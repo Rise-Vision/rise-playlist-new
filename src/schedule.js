@@ -279,6 +279,11 @@ class Schedule {
 
     this.playingItems.push(nextItem);
 
+    if (nextItem.element.isNotReady()) {
+      this.itemDurationTimer = setTimeout(() => this.play(), 1000);
+      return;
+    }
+
     let previousItem = this.playingItem;
 
     this.playingItem = nextItem;

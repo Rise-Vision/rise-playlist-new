@@ -306,6 +306,22 @@
             assert.equal(item.isDone(), false);
           });
 
+          test('should set ready when child sends "rise-components-ready"', () => {
+            const item = new RisePlaylistItem();
+            item.playUntilDone = true;
+
+            const child = document.createElement('rise-embedded-template');
+            item.appendChild(child);
+
+            item.ready();
+
+            assert.equal(item.isNotReady(), true);
+
+            child.dispatchEvent(new Event('rise-components-ready'));
+
+            assert.equal(item.isNotReady(), false);
+          });
+
         });
 
       });

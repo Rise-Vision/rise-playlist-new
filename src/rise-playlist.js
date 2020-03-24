@@ -43,13 +43,22 @@ export class RisePlaylistItem extends RiseElement {
     super();
     this._done = false;
     this._isPlaying = false;
+    this._isReady = false;
   }
 
   ready() {
     super.ready();
-    if (this.firstElementChild && this.playUntilDone) {
-      this.firstElementChild.addEventListener("report-done", () => this._setDone());
+    if (this.firstElementChild) {
+      if (this.playUntilDone) {
+        this.firstElementChild.addEventListener("report-done", () => this._setDone());
+      }
+
+      this.firstElementChild.addEventListener("rise-components-ready", () => this._isReady = true);
     }
+  }
+
+  isNotReady() {
+    return !this._isReady;
   }
 
   _setDone() {
