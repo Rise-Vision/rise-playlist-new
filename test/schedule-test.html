@@ -27,6 +27,12 @@
         let schedule = null;
         let transitionHandler = null;
 
+        function createRisePlaylistItem(ready = true) {
+          const element = new RisePlaylistItem();
+          element._isReady = ready;
+          return element;
+        }
+
         setup(() => {
           clock = sinon.useFakeTimers();
 
@@ -53,7 +59,7 @@
           const item = {
             duration: 10,
             playUntilDone: false,
-            element: document.createElement('rise-playlist-item')
+            element: createRisePlaylistItem()
           };
 
           schedule.items = [item];
@@ -67,13 +73,13 @@
           const firstItem = {
             duration: 10,
             playUntilDone: false,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
 
           const secondItem = {
             duration: 12,
             playUntilDone: false,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
 
           schedule.items = [firstItem, secondItem];
@@ -95,7 +101,7 @@
           const item = {
             duration: 10,
             playUntilDone: false,
-            element: document.createElement('rise-playlist-item')
+            element: createRisePlaylistItem()
           };
 
           schedule.items = [item];
@@ -119,13 +125,13 @@
           const firstItem = {
             duration: 10,
             playUntilDone: false,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
 
           const secondItem = {
             duration: 12,
             playUntilDone: true,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
 
           schedule.items = [firstItem, secondItem];
@@ -153,7 +159,7 @@
           const firstItem = {
             duration: 10,
             playUntilDone: true,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
 
           schedule.doneListener = sandbox.spy();
@@ -188,13 +194,13 @@
           const firstItem = {
             duration: 10,
             playUntilDone: false,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
 
           const secondItem = {
             duration: 12,
             playUntilDone: false,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
 
           schedule.items = [firstItem, secondItem];
@@ -222,14 +228,14 @@
           const firstItem = {
             duration: 10,
             playUntilDone: false,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
           sandbox.stub(firstItem.element, "stop");
 
           const secondItem = {
             duration: 12,
             playUntilDone: false,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
           sandbox.stub(secondItem.element, "stop");
 
@@ -245,13 +251,13 @@
           const firstItem = {
             duration: 10,
             playUntilDone: false,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
 
           const secondItem = {
             duration: 12,
             playUntilDone: false,
-            element: new RisePlaylistItem()
+            element: createRisePlaylistItem()
           };
 
           schedule.items = [firstItem, secondItem];
@@ -263,6 +269,51 @@
 
           assert.equal(schedule.items[0], firstItem);
           assert.equal(schedule.items[1], secondItem);
+        });
+
+        test('should skip items that are not ready', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: createRisePlaylistItem()
+          };
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: createRisePlaylistItem(false)
+          };
+
+          const thirdItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: createRisePlaylistItem()
+          };
+
+          schedule.items = [firstItem, secondItem, thirdItem];
+
+          schedule.start();
+
+          assert.equal(transitionHandler.transition.calledWith(null, firstItem.element), true);
+
+          clock.tick((firstItem.duration + 1) * 1000);
+
+          assert.equal(transitionHandler.transition.calledWith(firstItem.element, secondItem.element), false);
+
+          clock.tick(1000);
+
+          assert.equal(transitionHandler.transition.calledWith(firstItem.element, thirdItem.element), true);
+
+          clock.tick((thirdItem.duration + 1) * 1000);
+
+          assert.equal(transitionHandler.transition.calledWith(thirdItem.element, firstItem.element), true);
+
+          secondItem.element._isReady = true;
+
+          clock.tick((firstItem.duration + 1) * 1000);
+
+          assert.equal(transitionHandler.transition.calledWith(firstItem.element, secondItem.element), true);
+
         });
 
       });
