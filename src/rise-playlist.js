@@ -103,6 +103,9 @@ export default class RisePlaylist extends RiseElement {
         :host {
           position: relative;
           overflow: hidden;
+          display: block;
+          height: 100%;
+          width: 100%;
         }
       </style>
       <slot></slot>
