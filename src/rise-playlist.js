@@ -249,7 +249,7 @@ export default class RisePlaylist extends RiseElement {
       });
 
       this.schedule.items = this.schedule.items.filter(item => !info.removedNodes.includes(item.element));
-      this._startSchedule();
+      // this._startSchedule();
     });
   }
 
