@@ -161,6 +161,7 @@ export default class RisePlaylist extends RiseElement {
 
   constructor() {
     super();
+    this._isPlaying = false;
     this.schedule = new Schedule();
     this.schedule.doneListener = () => this._onScheduleDone();
     this._setVersion( version );
@@ -174,14 +175,20 @@ export default class RisePlaylist extends RiseElement {
     super.ready();
 
     this.addEventListener( "rise-presentation-play", () => this._startSchedule());
-    this.addEventListener( "rise-presentation-stop", () => this.schedule.stop());
+    this.addEventListener( "rise-presentation-stop", () => this._stopSchedule());
   }
 
   _startSchedule() {
     if (!this.isPreview()) {
+      this._isPlaying = true;
       this.schedule.start();
     }
   }
+
+  _stopSchedule() {
+    this._isPlaying = false;
+    this.schedule.stop();
+}
 
   _onScheduleDone() {
     if (this.hasAttribute("play-until-done")) {
@@ -249,7 +256,10 @@ export default class RisePlaylist extends RiseElement {
       });
 
       this.schedule.items = this.schedule.items.filter(item => !info.removedNodes.includes(item.element));
-      this._startSchedule();
+
+      if (this._isPlaying) {
+        this._startSchedule();
+      }
     });
   }
 

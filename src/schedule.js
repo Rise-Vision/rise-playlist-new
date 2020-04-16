@@ -261,6 +261,7 @@ class Schedule {
 
   play() {
     if (!this.playingItems || this.playingItems.length === 0) {
+      setTimeout(() => this.doneListener(), 1000);
       return;
     }
 
