@@ -209,9 +209,16 @@ export default class RisePlaylist extends RiseElement {
       return item.element && item.element.tagName && item.element.tagName !== "";
     });
 
+    let itemIndex = 0;
+
     validItems.map(item => {
+      itemIndex++;
+
+      let playListItemId = this.id + "_" + itemIndex;
 
       const playListItem = document.createElement("rise-playlist-item");
+
+      playListItem.setAttribute("id", playListItemId);
 
       if (item["duration"]) {
         playListItem.setAttribute("duration", item["duration"]);
@@ -226,6 +233,8 @@ export default class RisePlaylist extends RiseElement {
       }
 
       const element = document.createElement(item.element.tagName);
+
+      element.setAttribute("id", playListItemId + "_" + item.element.tagName);
 
       Object.entries(item.element.attributes).forEach(([key, value]) => {
         element.setAttribute(key, value);

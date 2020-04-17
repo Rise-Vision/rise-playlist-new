@@ -26,7 +26,7 @@
 
     <test-fixture id="StaticValueTestFixture">
       <template>
-        <rise-playlist items='[{
+        <rise-playlist id='playlist1' items='[{
           "duration": 1,
           "transition-type": "fadeIn",
           "element": {
@@ -142,6 +142,32 @@
             flush(() => {
               assert.equal(element.items.length, 4);
               assert.equal(element.schedule.items.length, 1);
+              done();
+            });
+          });
+
+          test('<play-list-item> and <embedded-template> elements have ID(s)', (done) => {
+
+            const item = {
+              "duration": 2,
+              "transition-type": "fadeIn",
+              "element": {
+                "tagName": "rise-embedded-template",
+                "attributes": {
+                  "template-id": "a429c126-598d-4251-9c0e-b49821056608"
+                }
+              }
+            };
+
+            element.items = [item, item];
+
+            flush(() => {
+              let playlistItemElements = element.children;
+              assert.equal(playlistItemElements.length, 2);
+              assert.equal(playlistItemElements[0].id, "playlist1_1");
+              assert.equal(playlistItemElements[1].id, "playlist1_2");
+              let embeddedTemplateElement = playlistItemElements[0].firstChild;
+              assert.equal(embeddedTemplateElement.id, "playlist1_1_rise-embedded-template");
               done();
             });
           });
