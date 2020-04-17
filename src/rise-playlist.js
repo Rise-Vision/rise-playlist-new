@@ -168,7 +168,7 @@ export default class RisePlaylist extends RiseElement {
   }
 
   isPreview() {
-    return RisePlayerConfiguration && RisePlayerConfiguration.isPreview();
+    return RisePlayerConfiguration && RisePlayerConfiguration.isPreview() && !RisePlayerConfiguration.Helpers.isInViewer();
   }
 
   ready() {
