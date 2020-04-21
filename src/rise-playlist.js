@@ -54,8 +54,13 @@ export class RisePlaylistItem extends RiseElement {
         this.firstElementChild.addEventListener("report-done", () => this._setDone());
       }
 
-      this.firstElementChild.addEventListener("rise-components-ready", () => this._isReady = true);
+      this.firstElementChild.addEventListener("rise-components-ready", () => this._setReady());
     }
+  }
+
+  _setReady() {
+    this._isReady = true;
+    console.log(`item is ready. ID=${this.id}`);
   }
 
   isNotReady() {
@@ -88,6 +93,7 @@ export class RisePlaylistItem extends RiseElement {
 
   _sendEventToChild(eventName) {
     if (this.firstElementChild) {
+      console.log(`dispatching ${eventName}. ID=${this.id}`);
       this.firstElementChild.dispatchEvent(new Event(eventName));
     }
   }
@@ -174,8 +180,13 @@ export default class RisePlaylist extends RiseElement {
   ready() {
     super.ready();
 
-    this.addEventListener( "rise-presentation-play", () => this._startSchedule());
+    this.addEventListener( "rise-presentation-play", () => this._handleRisePresentationPlay());
     this.addEventListener( "rise-presentation-stop", () => this._stopSchedule());
+  }
+
+  _handleRisePresentationPlay() {
+    console.log(`playlist received rise-presentation-play. ID=${this.id}`);
+    this._startSchedule();
   }
 
   _startSchedule() {
