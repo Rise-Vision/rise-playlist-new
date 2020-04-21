@@ -260,7 +260,10 @@ class Schedule {
   }
 
   play() {
+    console.log("schedule.play");
+
     if (!this.playingItems || this.playingItems.length === 0) {
+      console.log("Playlist is empty");
       setTimeout(() => this.doneListener(), 1000);
       return;
     }
@@ -281,6 +284,7 @@ class Schedule {
     this.playingItems.push(nextItem);
 
     if (nextItem.element.isNotReady()) {
+      console.log(`${nextItem.element.id} is not ready`);
       this.itemDurationTimer = setTimeout(() => this.play(), 1000);
       return;
     }
