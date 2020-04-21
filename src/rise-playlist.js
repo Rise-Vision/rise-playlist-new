@@ -172,10 +172,10 @@ export default class RisePlaylist extends RiseElement {
   }
 
   ready() {
-    super.ready();
-
     this.addEventListener( "rise-presentation-play", () => this._startSchedule());
     this.addEventListener( "rise-presentation-stop", () => this._stopSchedule());
+
+    super.ready();
   }
 
   _startSchedule() {
