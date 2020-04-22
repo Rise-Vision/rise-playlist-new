@@ -183,6 +183,17 @@
             assert.equal(element.schedule.start.called, true);
           });
 
+          test('should start schedule on "rise-presentation-play" event in viewer preview', () => {
+            sandbox.stub(RisePlayerConfiguration, "isPreview").returns(true);
+            sandbox.stub(RisePlayerConfiguration.Helpers, "isInViewer").returns(true);
+
+            sandbox.stub(element.schedule, "start");
+
+            element.dispatchEvent(new Event("rise-presentation-play"));
+
+            assert.equal(element.schedule.start.called, true);
+          });
+
           test('should not start schedule on "rise-presentation-play" event when in preview mode', () => {
             sandbox.stub(RisePlayerConfiguration, "isPreview").returns(true);
             sandbox.stub(element.schedule, "start");
