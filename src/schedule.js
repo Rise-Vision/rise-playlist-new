@@ -279,12 +279,10 @@ class Schedule {
       }
     }
 
-    let nextItem = this.playingItems.shift();
+    let nextItem = this._findNextReadyItem();
 
-    this.playingItems.push(nextItem);
-
-    if (nextItem.element.isNotReady()) {
-      console.log(`${nextItem.element.id} is not ready`);
+    if (!nextItem) {
+      console.log("No ready items found");
       this.itemDurationTimer = setTimeout(() => this.play(), 1000);
       return;
     }
@@ -304,6 +302,20 @@ class Schedule {
     }
 
     this.itemDurationTimer = setTimeout(() => this.play(), nextItem.playUntilDone ? 1000 : nextItem.duration * 1000);
+  }
+
+  _findNextReadyItem() {
+    let nextItem = null;
+    let len = this.playingItems.length;
+
+    for (let i = 0; i < len; i++) {
+      nextItem = this.playingItems.shift();
+      this.playingItems.push(nextItem);
+
+      if (!nextItem.element.isNotReady()) {
+        return nextItem;
+      }
+    }
   }
 }
 
