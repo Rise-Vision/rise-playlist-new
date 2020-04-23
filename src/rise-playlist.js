@@ -45,6 +45,7 @@ export class RisePlaylistItem extends RiseElement {
     this._done = false;
     this._isPlaying = false;
     this._isReady = false;
+    this._isError = false;
   }
 
   ready() {
@@ -55,6 +56,7 @@ export class RisePlaylistItem extends RiseElement {
       }
 
       this.firstElementChild.addEventListener("rise-components-ready", () => this._setReady());
+      this.firstElementChild.addEventListener("rise-components-error", () => this._isError = true);
     }
   }
 
@@ -65,6 +67,10 @@ export class RisePlaylistItem extends RiseElement {
 
   isNotReady() {
     return !this._isReady;
+  }
+
+  isError() {
+    return this._isError;
   }
 
   _setDone() {
