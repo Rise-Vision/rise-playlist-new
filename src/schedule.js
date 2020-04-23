@@ -270,13 +270,10 @@ class Schedule {
 
     clearTimeout(this.itemDurationTimer);
 
-    if (this.playingItem && this.playingItem.playUntilDone) {
-      if (this.playingItem.element.isDone()) {
-        this.playingItem.element.resetDone();
-      } else {
+    if (this.playingItem && this.playingItem.playUntilDone &&
+      !this.playingItem.element.isDone()) {
         this.itemDurationTimer = setTimeout(() => this.play(), 1000);
         return;
-      }
     }
 
     let nextItem = this.playingItems.shift();

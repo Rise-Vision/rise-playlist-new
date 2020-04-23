@@ -83,16 +83,14 @@ export class RisePlaylistItem extends RiseElement {
     return this._done;
   }
 
-  resetDone() {
-    this._done = false;
-  }
-
   play() {
     this._sendEventToChild("rise-playlist-play");
     this._isPlaying = true;
   }
 
   stop() {
+    this._done = false;
+
     this._sendEventToChild("rise-playlist-stop");
     this._isPlaying = false;
   }
