@@ -283,7 +283,7 @@ class Schedule {
 
     this.playingItems.push(nextItem);
 
-    if (nextItem.element.isNotReady()) {
+    if (nextItem.element.isNotReady() || nextItem.element.isError()) {
       console.log(`${nextItem.element.id} is not ready`);
       this.itemDurationTimer = setTimeout(() => this.play(), 1000);
       return;
