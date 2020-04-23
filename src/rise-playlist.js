@@ -138,7 +138,7 @@ export default class RisePlaylist extends RiseElement {
           font-family: Helvetica, Arial, sans-serif;
         }
       </style>
-      <template is="dom-if" if="{{isPreview()}}">
+      <template is="dom-if" if="{{isInEditor()}}">
       <div id="previewPlaceholder">
         <svg viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <g id="1.-Atoms" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -173,8 +173,8 @@ export default class RisePlaylist extends RiseElement {
     this._setVersion( version );
   }
 
-  isPreview() {
-    return RisePlayerConfiguration && RisePlayerConfiguration.isPreview();
+  isInEditor() {
+    return RisePlayerConfiguration && RisePlayerConfiguration.isPreview() && !RisePlayerConfiguration.Helpers.isInViewer();
   }
 
   ready() {
@@ -190,7 +190,7 @@ export default class RisePlaylist extends RiseElement {
   }
 
   _startSchedule() {
-    if (!this.isPreview()) {
+    if (!this.isInEditor()) {
       this._isPlaying = true;
       this.schedule.start();
     }

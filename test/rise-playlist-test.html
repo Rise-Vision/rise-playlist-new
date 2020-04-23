@@ -16,7 +16,10 @@
     <script type="text/javascript">
       RisePlayerConfiguration = {
         isConfigured: () => true,
-        isPreview: () => false
+        isPreview: () => false,
+        Helpers: {
+          isInViewer: () => false          
+        }
       };
     </script>
 
@@ -173,6 +176,17 @@
           });
 
           test('should start schedule on "rise-presentation-play" event', () => {
+            sandbox.stub(element.schedule, "start");
+
+            element.dispatchEvent(new Event("rise-presentation-play"));
+
+            assert.equal(element.schedule.start.called, true);
+          });
+
+          test('should start schedule on "rise-presentation-play" event in viewer preview', () => {
+            sandbox.stub(RisePlayerConfiguration, "isPreview").returns(true);
+            sandbox.stub(RisePlayerConfiguration.Helpers, "isInViewer").returns(true);
+
             sandbox.stub(element.schedule, "start");
 
             element.dispatchEvent(new Event("rise-presentation-play"));
