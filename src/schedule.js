@@ -270,6 +270,16 @@ class Schedule {
 
     clearTimeout(this.itemDurationTimer);
 
+    let allTemplatesReturnedError = this.playingItems.every(item => item.element.isError());
+
+    if (allTemplatesReturnedError) {
+      // this condition occurs when Viewer runs without Player in the Shared Schedules mode
+      // and all embedded temaplates have unsupported compoenent like Video or Financial
+      console.log("All templates faild to load");
+      setTimeout(() => this.doneListener(), 1000);
+      return;
+    }
+
     if (this.playingItem && this.playingItem.playUntilDone &&
       !this.playingItem.element.isDone()) {
         this.itemDurationTimer = setTimeout(() => this.play(), 1000);

@@ -306,6 +306,34 @@
           assert.equal(schedule.doneListener.called, true, 'done is called');
         });
 
+        test('should call done listener if all temapltes return error', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: createRisePlaylistItem(false)
+          };
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: createRisePlaylistItem(false)
+          };
+
+          firstItem.element._isError = true;
+          secondItem.element._isError = true;
+
+          schedule.items = [firstItem, secondItem];
+
+          schedule.doneListener = sandbox.spy();
+
+          schedule.start();
+
+          // wait 2 seconds because done is called 1 secod after start()
+          clock.tick(2000);
+
+          assert.equal(schedule.doneListener.called, true, 'done is called');
+        });
+
         test('should stop rise-playlist-item elements when playlist stops', () => {
           const firstItem = {
             duration: 10,
