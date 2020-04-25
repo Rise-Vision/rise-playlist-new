@@ -240,9 +240,11 @@ class Schedule {
     this.playingItem = null;
     this.firstItem = null;
     this.itemDurationTimer = null;
+    this.startTime = null;
   }
 
   start() {
+    this.startTime = new Date();
     this.reset();
     this.play();
   }
@@ -277,6 +279,15 @@ class Schedule {
       // and all embedded temaplates have unsupported compoenent like Video or Financial
       console.log("All templates faild to load");
       setTimeout(() => this.doneListener(), 1000);
+      return;
+    }
+
+    const PLAYLIST_LOAD_TIMEOUT_MS = 30000;
+    let allTemplatesNotReady = this.playingItems.every(item => item.element.isNotReady());
+
+    if (allTemplatesNotReady && (new Date().getTime() - this.startTime.getTime()) > PLAYLIST_LOAD_TIMEOUT_MS) {
+      console.log("Playlilst timed out");
+      this.doneListener();
       return;
     }
 

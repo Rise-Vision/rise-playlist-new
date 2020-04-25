@@ -301,7 +301,11 @@
 
           schedule.start();
 
-          clock.tick(30 * 1000);
+          clock.tick(29 * 1000);
+
+          assert.equal(schedule.doneListener.called, false, 'done is not called');
+
+          clock.tick(2000);
 
           assert.equal(schedule.doneListener.called, true, 'done is called');
         });
