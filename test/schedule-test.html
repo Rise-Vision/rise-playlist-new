@@ -118,7 +118,7 @@
 
           clock.tick((item.duration + 1) * 1000);
 
-          assert.equal(schedule.doneListener.calledTwice, true);
+          assert.equal(schedule.doneListener.calledOnce, true, "done is called only once at the end of first round");
         });
 
         test('should play multiple items until done', () => {
@@ -168,7 +168,7 @@
 
           schedule.start();
 
-          assert.equal(transitionHandler.transition.calledWith(null, firstItem.element), true);
+          assert.equal(transitionHandler.transition.calledWith(null, firstItem.element), true, 'firstItem started playing');
 
           clock.tick((firstItem.duration + 1) * 1000);
 
@@ -176,18 +176,17 @@
 
           clock.tick(1000);
 
-          assert.equal(schedule.doneListener.calledOnce, true);
+          assert.equal(schedule.doneListener.calledOnce, true, 'done is called first time');
 
           clock.tick((firstItem.duration + 1) * 1000);
 
-          assert.equal(schedule.doneListener.calledOnce, true);
+          assert.equal(schedule.doneListener.callCount, 1, 'done is not called when duration is passed for PUD item');
 
           firstItem.element._setDone();
 
           clock.tick(1000);
 
-          assert.equal(schedule.doneListener.calledTwice, true);
-
+          assert.equal(schedule.doneListener.calledOnce, true, 'schedule.doneListener is only called once');
         });
 
         test('should call done listener when it finishes playing multiple items', () => {
@@ -205,23 +204,23 @@
 
           schedule.items = [firstItem, secondItem];
 
-          schedule.doneListener = sandbox.spy();
+          schedule._sendDoneEvent = sandbox.spy();
 
           schedule.start();
 
-          assert.equal(schedule.doneListener.called, false);
+          assert.equal(schedule._sendDoneEvent.called, false);
 
           clock.tick((firstItem.duration + 1) * 1000);
 
-          assert.equal(schedule.doneListener.calledOnce, false);
+          assert.equal(schedule._sendDoneEvent.calledOnce, false);
 
           clock.tick((secondItem.duration + 1) * 1000);
 
-          assert.equal(schedule.doneListener.calledOnce, true);
+          assert.equal(schedule._sendDoneEvent.calledOnce, true);
 
           clock.tick((firstItem.duration + secondItem.duration + 1) * 1000);
 
-          assert.equal(schedule.doneListener.calledTwice, true);
+          assert.equal(schedule._sendDoneEvent.calledTwice, true);
         });
 
         test('should call done listener when it finishes playing playlist and last item is still not ready', () => {
