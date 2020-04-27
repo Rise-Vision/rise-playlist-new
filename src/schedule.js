@@ -278,7 +278,7 @@ class Schedule {
 
     if (allTemplatesReturnedError) {
       // this condition occurs when Viewer runs without Player in the Shared Schedules mode
-      // and all embedded temaplates have unsupported compoenent like Video or Financial
+      // and all embedded templates have unsupported components like Video or Financial
       console.log("All templates faild to load");
       setTimeout(() => this._sendDoneEvent(), 1000);
       return;
