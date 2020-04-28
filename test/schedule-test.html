@@ -118,7 +118,7 @@
 
           clock.tick((item.duration + 1) * 1000);
 
-          assert.equal(schedule.doneListener.calledTwice, true);
+          assert.equal(schedule.doneListener.calledOnce, true, "done is called only once at the end of first round");
         });
 
         test('should play multiple items until done', () => {
@@ -146,7 +146,7 @@
 
           clock.tick((secondItem.duration + 1) * 1000);
 
-          assert.equal(transitionHandler.transition.calledWith(secondItem.element, firstItem.element), false);
+          assert.equal(transitionHandler.transition.calledWith(secondItem.element, firstItem.element), false, 'duration/timer is ignored');
 
           secondItem.element._setDone();
 
@@ -168,7 +168,7 @@
 
           schedule.start();
 
-          assert.equal(transitionHandler.transition.calledWith(null, firstItem.element), true);
+          assert.equal(transitionHandler.transition.calledWith(null, firstItem.element), true, 'firstItem started playing');
 
           clock.tick((firstItem.duration + 1) * 1000);
 
@@ -176,18 +176,17 @@
 
           clock.tick(1000);
 
-          assert.equal(schedule.doneListener.calledOnce, true);
+          assert.equal(schedule.doneListener.calledOnce, true, 'done is called first time');
 
           clock.tick((firstItem.duration + 1) * 1000);
 
-          assert.equal(schedule.doneListener.calledOnce, true);
+          assert.equal(schedule.doneListener.callCount, 1, 'done is not called when duration is passed for PUD item');
 
           firstItem.element._setDone();
 
           clock.tick(1000);
 
-          assert.equal(schedule.doneListener.calledTwice, true);
-
+          assert.equal(schedule.doneListener.calledOnce, true, 'schedule.doneListener is only called once');
         });
 
         test('should call done listener when it finishes playing multiple items', () => {
@@ -205,23 +204,137 @@
 
           schedule.items = [firstItem, secondItem];
 
+          schedule._sendDoneEvent = sandbox.spy();
+
+          schedule.start();
+
+          assert.equal(schedule._sendDoneEvent.called, false);
+
+          clock.tick((firstItem.duration + 1) * 1000);
+
+          assert.equal(schedule._sendDoneEvent.calledOnce, false);
+
+          clock.tick((secondItem.duration + 1) * 1000);
+
+          assert.equal(schedule._sendDoneEvent.calledOnce, true);
+
+          clock.tick((firstItem.duration + secondItem.duration + 1) * 1000);
+
+          assert.equal(schedule._sendDoneEvent.calledTwice, true);
+        });
+
+        test('should call done listener when it finishes playing playlist and last item is still not ready', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: createRisePlaylistItem(true)
+          };
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: createRisePlaylistItem(false)
+          };
+
+          schedule.items = [firstItem, secondItem];
+
           schedule.doneListener = sandbox.spy();
 
           schedule.start();
 
-          assert.equal(schedule.doneListener.called, false);
+          assert.equal(schedule.playingItem, firstItem, 'started playing first item');
 
           clock.tick((firstItem.duration + 1) * 1000);
 
-          assert.equal(schedule.doneListener.calledOnce, false);
+          assert.equal(schedule.playingItem, firstItem, 'second item is skipped, back to the first item');
+
+          assert.equal(schedule.doneListener.calledOnce, true, 'done is called');
+        });
+
+        test('should call done listener when it finishes playing playlist and first item is still not ready', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: createRisePlaylistItem(false)
+          };
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: createRisePlaylistItem()
+          };
+
+          schedule.items = [firstItem, secondItem];
+
+          schedule.doneListener = sandbox.spy();
+
+          schedule.start();
+
+          assert.equal(schedule.playingItem, null, 'first item is skipped');
+
+          clock.tick(1000);
+
+          assert.equal(schedule.playingItem, secondItem, 'started playing second item');
 
           clock.tick((secondItem.duration + 1) * 1000);
 
-          assert.equal(schedule.doneListener.calledOnce, true);
+          assert.equal(schedule.doneListener.calledOnce, true, 'done is called');
+        });
 
-          clock.tick((firstItem.duration + secondItem.duration + 1) * 1000);
+        test('should call done listener after 30 seconds if none of the items are ready', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: createRisePlaylistItem(false)
+          };
 
-          assert.equal(schedule.doneListener.calledTwice, true);
+          const secondItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: createRisePlaylistItem(false)
+          };
+
+          schedule.items = [firstItem, secondItem];
+
+          schedule.doneListener = sandbox.spy();
+
+          schedule.start();
+
+          clock.tick(29 * 1000);
+
+          assert.equal(schedule.doneListener.called, false, 'done is not called');
+
+          clock.tick(2000);
+
+          assert.equal(schedule.doneListener.called, true, 'done is called');
+        });
+
+        test('should call done listener if all templates return error', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: false,
+            element: createRisePlaylistItem(false)
+          };
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: false,
+            element: createRisePlaylistItem(false)
+          };
+
+          firstItem.element._isError = true;
+          secondItem.element._isError = true;
+
+          schedule.items = [firstItem, secondItem];
+
+          schedule.doneListener = sandbox.spy();
+
+          schedule.start();
+
+          // wait 2 seconds because done is called 1 secod after start()
+          clock.tick(2000);
+
+          assert.equal(schedule.doneListener.called, true, 'done is called');
         });
 
         test('should stop rise-playlist-item elements when playlist stops', () => {
@@ -271,7 +384,7 @@
           assert.equal(schedule.items[1], secondItem);
         });
 
-        test('should skip items that are not ready', () => {
+        test('should skip items that are not ready - non PUD', () => {
           const firstItem = {
             duration: 10,
             playUntilDone: false,
@@ -314,6 +427,53 @@
 
           assert.equal(transitionHandler.transition.calledWith(firstItem.element, secondItem.element), true);
 
+        });
+
+        test('should skip items that are not ready - PUD', () => {
+          const firstItem = {
+            duration: 10,
+            playUntilDone: true,
+            element: createRisePlaylistItem()
+          };
+
+          const secondItem = {
+            duration: 12,
+            playUntilDone: true,
+            element: createRisePlaylistItem(false)
+          };
+
+          const thirdItem = {
+            duration: 12,
+            playUntilDone: true,
+            element: createRisePlaylistItem()
+          };
+
+          schedule.items = [firstItem, secondItem, thirdItem];
+
+          schedule.start();
+
+          assert.equal(transitionHandler.transition.calledWith(null, firstItem.element), true, 'first item started playing');
+
+          firstItem.element._setDone();
+          clock.tick(1000);
+
+          assert.equal(transitionHandler.transition.calledWith(firstItem.element, secondItem.element), false, 'second item is skipped because it\'s not ready');
+
+          clock.tick(1000);
+
+          assert.equal(transitionHandler.transition.calledWith(firstItem.element, thirdItem.element), true, 'third item started playing');
+
+          thirdItem.element._setDone();
+          clock.tick(1000);
+
+          assert.equal(transitionHandler.transition.calledWith(thirdItem.element, firstItem.element), true, 'back to the first item');
+
+          secondItem.element._isReady = true;
+
+          firstItem.element._setDone();
+          clock.tick(1000);
+
+          assert.equal(transitionHandler.transition.calledWith(firstItem.element, secondItem.element), true, 'second item started playing becuse it\'s ready now');
         });
 
       });

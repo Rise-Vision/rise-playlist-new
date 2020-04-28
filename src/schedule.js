@@ -235,14 +235,17 @@ class Schedule {
   constructor(transitionHandler = new TransitionHandler(), doneListener = () => {}) {
     this.transitionHandler = transitionHandler;
     this.doneListener = doneListener;
+    this.doneIsCalled = false;
     this.items = [];
     this.playingItems = [];
     this.playingItem = null;
     this.firstItem = null;
     this.itemDurationTimer = null;
+    this.startTime = null;
   }
 
   start() {
+    this.startTime = new Date();
     this.reset();
     this.play();
   }
@@ -257,6 +260,7 @@ class Schedule {
     this.playingItem = null;
     this.firstItem = this.items ? this.items[0] : undefined;
     this.playingItems = this.items ? this.items.slice() : [];
+    this.doneIsCalled = false;
   }
 
   play() {
@@ -264,32 +268,51 @@ class Schedule {
 
     if (!this.playingItems || this.playingItems.length === 0) {
       console.log("Playlist is empty");
-      setTimeout(() => this.doneListener(), 1000);
+      setTimeout(() => this._sendDoneEvent(), 1000);
       return;
     }
 
     clearTimeout(this.itemDurationTimer);
 
-    if (this.playingItem && this.playingItem.playUntilDone) {
-      if (this.playingItem.element.isDone()) {
-        this.playingItem.element.resetDone();
-      } else {
+    let allTemplatesReturnedError = this.playingItems.every(item => item.element.isError());
+
+    if (allTemplatesReturnedError) {
+      // this condition occurs when Viewer runs without Player in the Shared Schedules mode
+      // and all embedded templates have unsupported components like Video or Financial
+      console.log("All templates faild to load");
+      setTimeout(() => this._sendDoneEvent(), 1000);
+      return;
+    }
+
+    const PLAYLIST_LOAD_TIMEOUT_MS = 30000;
+    let allTemplatesNotReady = this.playingItems.every(item => item.element.isNotReady());
+
+    if (allTemplatesNotReady && (new Date().getTime() - this.startTime.getTime()) > PLAYLIST_LOAD_TIMEOUT_MS) {
+      console.log("Playlist timed out");
+      this._sendDoneEvent();
+      return;
+    }
+
+    if (this.playingItem && this.playingItem.playUntilDone &&
+      !this.playingItem.element.isDone()) {
         this.itemDurationTimer = setTimeout(() => this.play(), 1000);
         return;
-      }
     }
 
     let nextItem = this.playingItems.shift();
+    let previousItem = this.playingItem;
 
     this.playingItems.push(nextItem);
 
-    if (nextItem.element.isNotReady()) {
+    if (previousItem && nextItem === this.firstItem) {
+      this._sendDoneEvent();
+    }
+
+    if (nextItem.element.isNotReady() || nextItem.element.isError()) {
       console.log(`${nextItem.element.id} is not ready`);
       this.itemDurationTimer = setTimeout(() => this.play(), 1000);
       return;
     }
-
-    let previousItem = this.playingItem;
 
     this.playingItem = nextItem;
 
@@ -299,12 +322,17 @@ class Schedule {
       this.transitionHandler.transition(previousElement, nextItem.element);
     }
 
-    if (previousItem && nextItem === this.firstItem) {
-      this.doneListener();
-    }
-
     this.itemDurationTimer = setTimeout(() => this.play(), nextItem.playUntilDone ? 1000 : nextItem.duration * 1000);
   }
+
+  _sendDoneEvent() {
+    //call done only once
+    if (!this.doneIsCalled) {
+      this.doneIsCalled = true;
+      this.doneListener();
+    }
+  }
+
 }
 
 export { Schedule, TransitionHandler };
