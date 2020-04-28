@@ -288,7 +288,7 @@ class Schedule {
     let allTemplatesNotReady = this.playingItems.every(item => item.element.isNotReady());
 
     if (allTemplatesNotReady && (new Date().getTime() - this.startTime.getTime()) > PLAYLIST_LOAD_TIMEOUT_MS) {
-      console.log("Playlilst timed out");
+      console.log("Playlist timed out");
       this._sendDoneEvent();
       return;
     }
