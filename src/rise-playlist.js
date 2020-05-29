@@ -152,7 +152,7 @@ export default class RisePlaylist extends RiseElement {
               </g>
           </g>
         </svg>
-        <h1>Embedded Template</h1>
+        <h1>Embedded Presentation</h1>
       </div>
       </template>
       <slot></slot>
