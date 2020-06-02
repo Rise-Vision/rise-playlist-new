@@ -180,16 +180,16 @@ export default class RisePlaylist extends RiseElement {
     return RisePlayerConfiguration && RisePlayerConfiguration.isPreview() && !RisePlayerConfiguration.Helpers.isInViewer();
   }
 
-  ready() {
-    super.ready();
+  _handleRisePresentationPlay() {
+    super._handleRisePresentationPlay();
 
-    this.addEventListener( "rise-presentation-play", () => this._handleRisePresentationPlay());
-    this.addEventListener( "rise-presentation-stop", () => this._stopSchedule());
+    this._startSchedule();
   }
 
-  _handleRisePresentationPlay() {
-    console.log(`playlist received rise-presentation-play. ID=${this.id}`);
-    this._startSchedule();
+  _handleRisePresentationStop() {
+    super._handleRisePresentationStop();
+
+    this._stopSchedule();
   }
 
   _startSchedule() {
