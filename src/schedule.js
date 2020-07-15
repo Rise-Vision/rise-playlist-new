@@ -223,10 +223,17 @@ const transitions = {
 class TransitionHandler {
 
   transition(from, to) {
-    const transitionType = to.transitionType;
-    const transition = transitions[transitionType];
+    this.getTransitionObject(to).run(from, to);
+  }
 
-    transition.run(from, to);
+  reset(element) {
+    this.getTransitionObject(element).reset(element);
+  }
+
+  getTransitionObject(element) {
+    const transitionType = element.transitionType;
+
+    return transitions[transitionType];
   }
 
 }
@@ -252,7 +259,10 @@ class Schedule {
 
   stop() {
     this.reset();
-    this.playingItems.forEach(item => item.element.stop());
+    this.playingItems.forEach(item => {
+      this.transitionHandler.reset(item.element);
+      item.element.stop();
+    });
   }
 
   reset() {

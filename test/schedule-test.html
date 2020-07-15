@@ -38,6 +38,7 @@
 
           transitionHandler = new TransitionHandler();
           sandbox.stub(transitionHandler, "transition").callThrough();
+          sandbox.stub(transitionHandler, "reset").callThrough();
 
           schedule = new Schedule(transitionHandler);
         });
@@ -358,6 +359,10 @@
 
           assert.equal(firstItem.element.stop.called, true);
           assert.equal(secondItem.element.stop.called, true);
+
+          //transitions are reset
+          assert.equal(transitionHandler.reset.calledWith(firstItem.element), true);
+          assert.equal(transitionHandler.reset.calledWith(secondItem.element), true);
         });
 
         test('should keep items order when stop/starts', () => {
