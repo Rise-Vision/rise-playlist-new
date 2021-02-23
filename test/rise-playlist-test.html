@@ -15,9 +15,9 @@
 
     <script type="text/javascript">
       RisePlayerConfiguration = {
-        isConfigured: () => true,
         isPreview: () => false,
         Helpers: {
+          getComponentAsync: () => {},
           isInViewer: () => false          
         }
       };
@@ -80,16 +80,20 @@
       import { RisePlaylistItem } from '../src/rise-playlist.js';
 
       suite('rise-playlist', () => {
+        const sandbox = sinon.createSandbox();
+
+        setup(() => {
+          sandbox.stub(RisePlayerConfiguration.Helpers, 'getComponentAsync').resolves();
+        });
+
+        teardown(() => sandbox.restore());
 
         suite('static items attribute', () => {
           let element = null;
-          const sandbox = sinon.createSandbox();
 
           setup(() => {
             element = fixture('StaticValueTestFixture');
           });
-
-          teardown(() => sandbox.restore());
 
           test('setting "items" attribute on the element works', (done) => {
             flush(() => {
@@ -101,13 +105,24 @@
 
           test('invalid items should not be added in schedule', (done) => {
 
-            const good = {
+            const embeddedTemplateComponent = {
               "duration": 2,
               "transition-type": "fadeIn",
               "element": {
                 "tagName": "rise-embedded-template",
                 "attributes": {
                   "template-id": "a429c126-598d-4251-9c0e-b49821056608"
+                }
+              }
+            };
+
+            const textComponent = {
+              "duration": 2,
+              "transition-type": "fadeIn",
+              "element": {
+                "tagName": "rise-rext",
+                "attributes": {
+                  "text": "test123"
                 }
               }
             };
@@ -138,13 +153,13 @@
               }
             };
 
-            const items = [good, missingElement, missingTagName, emptyTagName];
+            const items = [embeddedTemplateComponent, textComponent, missingElement, missingTagName, emptyTagName];
 
             element.items = items;
 
             flush(() => {
-              assert.equal(element.items.length, 4);
-              assert.equal(element.schedule.items.length, 1);
+              assert.equal(element.items.length, 5);
+              assert.equal(element.schedule.items.length, 2);
               done();
             });
           });
@@ -293,6 +308,25 @@
         });
 
         suite('rise-playlist-item', () => {
+
+          test('should send "ready" to component when receiving it', (done) => {
+            const item = new RisePlaylistItem();
+
+            sandbox.stub(item, "_sendEventToChild");
+
+            const child = document.createElement('rise-embedded-template');
+            item.appendChild(child);
+
+            item.ready();
+
+            assert.equal(RisePlayerConfiguration.Helpers.getComponentAsync.calledWith(child), true);
+
+            flush(() => {
+              assert.equal(item._sendEventToChild.calledWith('start'), true);
+
+              done();
+            });
+          });
 
           test('play should send "rise-playlist-play" event to children', (done) => {
             const item = new RisePlaylistItem();

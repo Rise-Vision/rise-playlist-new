@@ -49,7 +49,10 @@ export class RisePlaylistItem extends RiseElement {
   }
 
   ready() {
+    const that = this;
+
     super.ready();
+
     if (this.firstElementChild) {
       if (this.playUntilDone) {
         this.firstElementChild.addEventListener("report-done", () => this._setDone());
@@ -57,6 +60,12 @@ export class RisePlaylistItem extends RiseElement {
 
       this.firstElementChild.addEventListener("rise-components-ready", () => this._setReady());
       this.firstElementChild.addEventListener("rise-components-error", () => this._isError = true);
+
+      RisePlayerConfiguration.Helpers.getComponentAsync( this.firstElementChild )
+        .then(function() {
+          that._sendEventToChild(RiseElement.EVENT_START);
+        });
+
     }
   }
 
@@ -202,7 +211,7 @@ export default class RisePlaylist extends RiseElement {
   _stopSchedule() {
     this._isPlaying = false;
     this.schedule.stop();
-}
+  }
 
   _onScheduleDone() {
     if (this.hasAttribute("play-until-done")) {
