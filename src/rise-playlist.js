@@ -202,7 +202,7 @@ export default class RisePlaylist extends RiseElement {
   _stopSchedule() {
     this._isPlaying = false;
     this.schedule.stop();
-}
+  }
 
   _onScheduleDone() {
     if (this.hasAttribute("play-until-done")) {
