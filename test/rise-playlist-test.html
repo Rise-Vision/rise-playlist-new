@@ -18,6 +18,7 @@
         isPreview: () => false,
         Helpers: {
           getComponentAsync: () => {},
+          sendStartEvent: () => {},
           isInViewer: () => false          
         }
       };
@@ -80,16 +81,16 @@
       import { RisePlaylistItem } from '../src/rise-playlist.js';
 
       suite('rise-playlist', () => {
+        const sandbox = sinon.createSandbox();
+
+        teardown(() => sandbox.restore());
 
         suite('static items attribute', () => {
           let element = null;
-          const sandbox = sinon.createSandbox();
 
           setup(() => {
             element = fixture('StaticValueTestFixture');
           });
-
-          teardown(() => sandbox.restore());
 
           test('setting "items" attribute on the element works', (done) => {
             flush(() => {
@@ -316,6 +317,18 @@
             });
 
             item.stop();
+          });
+
+          test('stop should "start" event to children', () => {
+            sandbox.stub(RisePlayerConfiguration.Helpers, 'sendStartEvent');
+
+            const item = new RisePlaylistItem();
+            const child = document.createElement('rise-embedded-template');
+            item.appendChild(child);
+
+            item.ready();
+
+            assert.equal(RisePlayerConfiguration.Helpers.sendStartEvent.calledWith(child), true);
           });
 
           test('should set done when child sends "report-done"', () => {
