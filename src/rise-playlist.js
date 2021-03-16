@@ -57,6 +57,8 @@ export class RisePlaylistItem extends RiseElement {
 
       this.firstElementChild.addEventListener("rise-components-ready", () => this._setReady());
       this.firstElementChild.addEventListener("rise-components-error", () => this._isError = true);
+
+      RisePlayerConfiguration.Helpers.sendStartEvent( this.firstElementChild );
     }
   }
 
