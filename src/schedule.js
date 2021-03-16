@@ -209,7 +209,7 @@ class HorizontalStripesTransition extends StripesTransition {
 }
 
 const transitions = {
-  "normal": new DefaultTransition(),
+  "normal": new DefaultTransition(0),
   "fadeIn": new FadeInTransition(),
   "zoomIn": new ZoomInTransition(),
   "slideFromLeft": new SlideFromLeftTransition(),
