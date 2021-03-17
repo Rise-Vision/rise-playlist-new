@@ -530,6 +530,14 @@
           assert.equal(next.style.visibility, "visible");
         });
 
+        test('should deafult to 0s default transition', () => {
+          const item = new RisePlaylistItem();
+          const transition = transitionHandler.getTransitionObject(item);
+
+          assert.equal(transition.constructor.name, "DefaultTransition");
+          assert.equal(transition.durationInSeconds, 0);
+        });
+
         test('should transition with fade in', () => {
           const previous = new RisePlaylistItem();
           sandbox.stub(previous, "stop");
