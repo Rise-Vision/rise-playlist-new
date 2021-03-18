@@ -295,24 +295,24 @@
 
         suite('rise-playlist-item', () => {
 
-          test('play should send "rise-playlist-play" event to children', (done) => {
+          test('play should send "rise-presentation-play" event to children', (done) => {
             const item = new RisePlaylistItem();
             const child = document.createElement('rise-embedded-template');
             item.appendChild(child);
 
-            child.addEventListener("rise-playlist-play", () => {
+            child.addEventListener("rise-presentation-play", () => {
               done();
             });
 
             item.play();
           });
 
-          test('stop should send "rise-playlist-stop" event to children', (done) => {
+          test('stop should send "rise-presentation-stop" event to children', (done) => {
             const item = new RisePlaylistItem();
             const child = document.createElement('rise-embedded-template');
             item.appendChild(child);
 
-            child.addEventListener("rise-playlist-stop", () => {
+            child.addEventListener("rise-presentation-stop", () => {
               done();
             });
 
