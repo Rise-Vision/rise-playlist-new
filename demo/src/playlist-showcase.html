@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>Playlist Showcase</title>
+
+    <script type="text/javascript">
+      // window.RISE_CONFIG = {
+      //   'componentsOverwrite': {
+      //     'rise-image': '/staging/components/rise-image/build-bundle/rise-image-bundle.min.js'
+      //   }
+      // };
+    </script>
+    <script src="https://widgets.risevision.com/stable/common/rise-init.min.js"></script>
+
+<style type="text/css">
+.playlist-container {
+  width: 100%;
+  height: 500px;
+  border: black solid 1px;
+}  
+
+#my-playlist {
+  background-color: darkgrey;
+}
+</style>
+    
+  </head>
+  <body>
+    <h1>
+      <rise-text id="text-1" value="Playlist Showcase"></rise-text>
+    </h1>
+
+    <ul>
+      <li>Text (5s)</li>
+      <li>Time-date (5s)</li>
+      <li>Slides (6s)</li>
+      <li>Image (PUD) - 2 images, 3s each</li>
+      <li>Embedded template (5s) - doesn't load attribute data in local environment</li>
+      <li>Video (3s) - Placeholder in local environment</li>
+    </ul>
+
+    <div class="playlist-container">
+      <rise-playlist id="my-playlist">
+
+        <rise-playlist-item duration="5" transition-type="slideFromTop" >
+          <rise-text id="my-text" value="Hello Text Component!" fontsize="50"></rise-text>
+        </rise-playlist-item>
+
+        <rise-playlist-item duration="5" transition-type="slideFromLeft" >
+          <rise-time-date id="my-time-date"></rise-time-date>
+        </rise-playlist-item>
+        
+        <rise-playlist-item duration="6" transition-type="normal" >
+          <rise-slides id="my-slides" label="Slides" duration="3" src="https://docs.google.com/presentation/d/e/2PACX-1vQCowZlWsqjjzqFmn9-hUBsg0FaKAaj9wepmkiI5tIQsCteObODjg8I-1eRvtkT0ALxLBg4YWd7rHrl/pub">
+          </rise-slides>
+        </rise-playlist-item>
+
+        <rise-playlist-item play-until-done transition-type="fadeIn">
+          <rise-image id="my-image" play-until-done
+            files="risemedialibrary-554d3ef9-78b7-4726-8f46-c1ec140c166d/simpsons.jpg|risemedialibrary-7fa5ee92-7deb-450b-a8d5-e5ed648c575f/Template Library/Global Assets/marketwall-video-wall/2x1-background.jpg"
+            duration="3"
+            responsive="true"
+            ></rise-image>
+        </rise-playlist-item>
+
+        <rise-playlist-item duration="5" transition-type="stripesHorizontal">
+          <rise-embedded-template id="first" template-id="24198274875578bed3a3282f19ebde588e540e86" presentation-id="49e06f27-5a18-4df7-948c-716b1cf9fa7d"></rise-embedded-template>
+        </rise-playlist-item>
+
+        <rise-playlist-item duration="3" transition-type="stripesVertical">
+          <rise-video id="my-video" files="risemedialibrary-554d3ef9-78b7-4726-8f46-c1ec140c166d/videos/10s_360p.mp4"></rise-video>
+        </rise-playlist-item>
+
+      </rise-playlist>
+    </div>
+
+    <script type="text/javascript">
+      window.addEventListener('rise-components-ready', function() {
+        RisePlayerConfiguration.Helpers.sendStartEvent( document.getElementById('my-playlist') );
+        RisePlayerConfiguration.Helpers.bindEventAsync( document.getElementById('my-playlist'), 'rise-presentation-play' );
+      });
+    </script>
+  </body>
+</html>
