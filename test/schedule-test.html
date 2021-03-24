@@ -311,7 +311,7 @@
           assert.equal(schedule.doneListener.called, true, 'done is called');
           assert.equal(schedule.logEvent.called, true, 'logEvent is called');
           assert.equal(schedule.logEvent.getCall(0).args[1], "Playlist timed out");
-          assert.equal(schedule.logEvent.getCall(0).args[2].errorCode, "E000000108");
+          assert.equal(schedule.logEvent.getCall(0).args[2].errorCode, "E000000211");
         });
 
         test('should call done listener if all templates return error', () => {
@@ -343,7 +343,7 @@
           assert.equal(schedule.doneListener.called, true, 'done is called');
           assert.equal(schedule.logEvent.called, true, 'logEvent is called');
           assert.equal(schedule.logEvent.getCall(0).args[1], "All templates faild to load");
-          assert.equal(schedule.logEvent.getCall(0).args[2].errorCode, "E000000108");
+          assert.equal(schedule.logEvent.getCall(0).args[2].errorCode, "E000000211");
         });
 
         test('should stop rise-playlist-item elements when playlist stops', () => {

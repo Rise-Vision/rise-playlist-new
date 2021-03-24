@@ -292,7 +292,7 @@ class Schedule {
       // and all embedded templates have unsupported components like Video or Financial
       console.log("All templates faild to load");
       if (this.logEvent) {
-        this.logEvent("error", "All templates faild to load", { errorCode: "E000000108" }, {});
+        this.logEvent("error", "All templates faild to load", { errorCode: "E000000211" }, {});
       }
       setTimeout(() => this._sendDoneEvent(), 1000);
       return;
@@ -304,7 +304,7 @@ class Schedule {
     if (allTemplatesNotReady && (new Date().getTime() - this.startTime.getTime()) > PLAYLIST_LOAD_TIMEOUT_MS) {
       console.log("Playlist timed out");
       if (this.logEvent) {
-        this.logEvent("error", "Playlist timed out", { errorCode: "E000000108" }, {});
+        this.logEvent("error", "Playlist timed out", { errorCode: "E000000211" }, {});
       }
       this._sendDoneEvent();
       return;
