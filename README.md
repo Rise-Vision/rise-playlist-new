@@ -114,29 +114,6 @@ A demo project showing how to use `rise-playlist`, `rise-playlist-item` and `ris
 
 Another option is using `example-playlist-component` as the scaffolding for a new template. This project can be found in https://github.com/Rise-Vision/html-template-library
 
-### Integration in a Template
-
-After creating the Template's structure in `html-template-library`, add a reference to the following components in the `<head>` section of `template.html`:
-
-```
-<script src="https://widgets.risevision.com/stable/components/rise-playlist/1/rise-playlist.js"></script>
-<script src="https://widgets.risevision.com/stable/components/rise-embedded-template/1/rise-embedded-template.js"></script>
-```
-
-and the `common-template` dependency:
-
-```
-  <script src="https://widgets.risevision.com/stable/common/config-prod.js"></script>
-  <script src="https://widgets.risevision.com/stable/common/common-template.js"></script>
-```
-
-Add an instance of the component, as shown in the example:
-
-```
-  <rise-playlist class="playlist" id="playlist1" label="Playlist of Embedded Templates" play-until-done>
-  </rise-playlist>
-```
-
 ## Submitting Issues
 If you encounter problems or find defects we really want to hear about them. If you could take the time to add them as issues to this Repository it would be most appreciated. When reporting issues, please use the following format where applicable:
 
