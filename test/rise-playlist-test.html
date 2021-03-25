@@ -197,6 +197,16 @@
             assert.equal(element.schedule.start.called, false);
           });
 
+          test('should start schedule on "rise-presentation-play" event in editor preview if non-editable', () => {
+            element.setAttribute("non-editable", true);
+            sandbox.stub(RisePlayerConfiguration.Helpers, "isEditorPreview").returns(true);
+            sandbox.stub(element.schedule, "start");
+
+            element.dispatchEvent(new Event("rise-presentation-play"));
+
+            assert.equal(element.schedule.start.called, true);
+          });
+
           test('should stop schedule on "rise-presentation-stop" event', () => {
             sandbox.stub(element.schedule, "stop");
 
