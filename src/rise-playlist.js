@@ -149,7 +149,7 @@ export default class RisePlaylist extends RiseElement {
           font-family: Helvetica, Arial, sans-serif;
         }
       </style>
-      <template is="dom-if" if="{{isInEditor()}}">
+      <template is="dom-if" if="{{shouldNotRender()}}">
       <div id="previewPlaceholder">
         <svg viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <g id="1.-Atoms" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -179,6 +179,7 @@ export default class RisePlaylist extends RiseElement {
   constructor() {
     super();
     this._isPlaying = false;
+    this._hasEmbeddedTemplates = false;
     this.schedule = new Schedule();
     this.schedule.doneListener = () => this._onScheduleDone();
     this._setVersion( version );
@@ -200,8 +201,12 @@ export default class RisePlaylist extends RiseElement {
     this._stopSchedule();
   }
 
+  shouldNotRender() {
+    return this.isInEditor() && this._hasEmbeddedTemplates;
+  }
+
   _startSchedule() {
-    if (!this.isInEditor()) {
+    if (!this.shouldNotRender()) {
       this._isPlaying = true;
       this.schedule.start();
     }
@@ -233,6 +238,8 @@ export default class RisePlaylist extends RiseElement {
 
     let itemIndex = 0;
 
+    this._hasEmbeddedTemplates = false;
+
     validItems.map(item => {
       itemIndex++;
 
@@ -255,6 +262,10 @@ export default class RisePlaylist extends RiseElement {
       }
 
       const element = document.createElement(item.element.tagName);
+
+      if (item.element.tagName.toLowerCase() === "rise-embedded-template") {
+        this._hasEmbeddedTemplates = true;
+      }
 
       element.setAttribute("id", playListItemId + "_" + item.element.tagName);
 
@@ -282,6 +293,10 @@ export default class RisePlaylist extends RiseElement {
           playUntilDone: element.hasAttribute("play-until-done"),
           element
         };
+
+        if (element.tagName.toLowerCase() === "rise-embedded-template") {
+          this._hasEmbeddedTemplates = true;
+        }
 
         this.schedule.items.push(scheduleItem);
       });
