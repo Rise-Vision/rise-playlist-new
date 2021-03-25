@@ -181,6 +181,7 @@ export default class RisePlaylist extends RiseElement {
     this._isPlaying = false;
     this.schedule = new Schedule();
     this.schedule.doneListener = () => this._onScheduleDone();
+    this.schedule.logEvent = (...args) => this._logEvent(...args);
     this._setVersion( version );
   }
 
@@ -268,6 +269,10 @@ export default class RisePlaylist extends RiseElement {
     }).forEach(element => {
       this.appendChild(element);
     });
+  }
+
+  _logEvent(type, event, details = null, additionalFields) {
+    super.log(type, event, details, additionalFields);
   }
 
   connectedCallback() {

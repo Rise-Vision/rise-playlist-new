@@ -241,6 +241,7 @@ class TransitionHandler {
 class Schedule {
   constructor(transitionHandler = new TransitionHandler(), doneListener = () => {}) {
     this.transitionHandler = transitionHandler;
+    this.logEvent = null;
     this.doneListener = doneListener;
     this.doneIsCalled = false;
     this.items = [];
@@ -290,6 +291,9 @@ class Schedule {
       // this condition occurs when Viewer runs without Player in the Shared Schedules mode
       // and all embedded templates have unsupported components like Video or Financial
       console.log("All templates faild to load");
+      if (this.logEvent) {
+        this.logEvent("error", "All templates faild to load", { errorCode: "E000000211" }, {});
+      }
       setTimeout(() => this._sendDoneEvent(), 1000);
       return;
     }
@@ -299,6 +303,9 @@ class Schedule {
 
     if (allTemplatesNotReady && (new Date().getTime() - this.startTime.getTime()) > PLAYLIST_LOAD_TIMEOUT_MS) {
       console.log("Playlist timed out");
+      if (this.logEvent) {
+        this.logEvent("error", "Playlist timed out", { errorCode: "E000000211" }, {});
+      }
       this._sendDoneEvent();
       return;
     }
