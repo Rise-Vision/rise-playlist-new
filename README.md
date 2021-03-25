@@ -1,34 +1,35 @@
 # rise-playlist [![Coverage Status](https://coveralls.io/repos/github/Rise-Vision/rise-playlist/badge.svg?branch=master)](https://coveralls.io/github/Rise-Vision/rise-playlist?branch=master)
 
+## Introduction
 `rise-playlist` is a Polymer 3 Web Component that renders a playlist of Rise components. The `rise-playlist` component renders `rise-playlist-item` components defined as child or as part of the `items` attribute.
 
-#### Example
+## Usage for Designers
+The below illustrates simple usage of the component. An example of a more complex one can be found here: 
+https://github.com/Rise-Vision/rise-playlist-new/blob/master/demo/src/playlist-showcase.html
 
+### Integration in a Template
+#### HTML
+
+Ensure you have a link to the rise-init in your `<head>` section of **template.html**.
 ```
-  <rise-playlist items='[{
-          "duration": 1,
-          "transition-type": "fadeIn",
-          "element": {
-            "tagName": "rise-embedded-template",
-            "attributes": {
-              "template-id": "a429c126-598d-4251-9c0e-b49821056608"
-            }
-          }
-        }]'>
-  </rise-playlist>
+<script src="https://widgets.risevision.com/stable/common/rise-init.min.js"></script>
 ```
 
-or
-
+Add an instance of the component to `<body>` section of **template.html**.
 ```
-  <rise-playlist>
-    <rise-playlist-item duration="5" transition-type="fadeIn">
-      <rise-embedded-template id="first" template-id="ba89703cf3df3379b124b199a97dc37af354e3e1"></rise-embedded-template>
-    </rise-playlist-item>
-    <rise-playlist-item play-until-done transition-type="fadeIn">
-      <rise-embedded-template id="second" template-id="24198274875578bed3a3282f19ebde588e540e86"></rise-embedded-template>
-    </rise-playlist-item>
-  </rise-playlist>
+      <rise-playlist id="my-playlist">
+        <rise-playlist-item duration="5" transition-type="slideFromTop" >
+          <rise-text id="my-text" value="Hello Text Component!" fontsize="50"></rise-text>
+        </rise-playlist-item>
+
+        <rise-playlist-item play-until-done transition-type="fadeIn">
+          <rise-image id="my-image" play-until-done
+            files="risemedialibrary-554d3ef9-78b7-4726-8f46-c1ec140c166d/simpsons.jpg"
+            duration="3"
+            responsive="true"
+            ></rise-image>
+        </rise-playlist-item>
+      </rise-playlist>
 ```
 
 ### Labels
