@@ -97,6 +97,7 @@
 
         setup(() => {
           sandbox.stub(RisePlayerConfiguration.Helpers, 'getComponentAsync').resolves();
+          sandbox.stub(RisePlayerConfiguration.Helpers, 'sendStartEvent');
         });
 
         teardown(() => sandbox.restore());
@@ -215,6 +216,44 @@
 
               let imageElement = playlistItemElements[1].firstChild;
               assert.equal(imageElement.getAttribute('play-until-done'), 'true');
+
+              done();
+            });
+          });
+
+          test('setting properties for the component', (done) => {
+            flush(() => {
+              let playlistItemElements = element.children;
+              let embeddedTemplateElement = playlistItemElements[0].firstChild;
+
+              assert.isTrue(RisePlayerConfiguration.Helpers.getComponentAsync.calledWith(embeddedTemplateElement));
+              assert.isTrue(embeddedTemplateElement.setProperties.called);
+              assert.isTrue(embeddedTemplateElement.setProperties.calledWith({
+                templateId: "a429c126-598d-4251-9c0e-b49821056608"
+              }));
+
+              let imageElement = playlistItemElements[1].firstChild;
+              assert.isTrue(RisePlayerConfiguration.Helpers.getComponentAsync.calledWith(imageElement));
+              assert.isTrue(imageElement.setProperties.called);
+              assert.isTrue(imageElement.setProperties.calledWith({
+                metadata: {
+                  fileName: "sample-image.png"
+                }
+              }));
+
+              done();
+            });
+          });
+
+          test('should send start event', (done) => {
+            flush(() => {
+              let playlistItemElements = element.children;
+              let embeddedTemplateElement = playlistItemElements[0].firstChild;
+
+              assert.isTrue(RisePlayerConfiguration.Helpers.sendStartEvent.calledWith(embeddedTemplateElement));
+
+              let imageElement = playlistItemElements[1].firstChild;
+              assert.isTrue(RisePlayerConfiguration.Helpers.sendStartEvent.calledWith(imageElement));
 
               done();
             });
