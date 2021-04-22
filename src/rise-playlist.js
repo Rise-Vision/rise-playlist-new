@@ -51,12 +51,6 @@ export class RisePlaylistItem extends RiseElement {
   ready() {
     super.ready();
     if (this.firstElementChild) {
-      // Skip unsupported Shared Schedule components (i.e. rise-video)
-      if (RisePlayerConfiguration && RisePlayerConfiguration.Helpers.isSharedSchedule()
-          && this.firstElementChild.tagName.toLowerCase() === "rise-video") {
-        this._isError = true;
-        return;
-      }
       if (this.playUntilDone) {
         this.firstElementChild.addEventListener("report-done", () => this._setDone());
       }
