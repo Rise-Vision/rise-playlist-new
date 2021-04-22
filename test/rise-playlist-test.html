@@ -98,6 +98,7 @@
 
         setup(() => {
           sandbox.stub(RisePlayerConfiguration.Helpers, "isSharedSchedule").returns(false);
+          sandbox.stub(RisePlayerConfiguration.Helpers, 'getComponentAsync').resolves();
         });
 
         teardown(() => sandbox.restore());
@@ -107,6 +108,8 @@
 
           setup(() => {
             element = fixture('StaticValueTestFixture');
+
+            Element.prototype.setProperties = sandbox.stub();
           });
 
           test('setting "items" attribute on the element works', (done) => {
@@ -359,18 +362,6 @@
             });
 
             item.stop();
-          });
-
-          test('stop should "start" event to children', () => {
-            sandbox.stub(RisePlayerConfiguration.Helpers, 'sendStartEvent');
-
-            const item = new RisePlaylistItem();
-            const child = document.createElement('rise-embedded-template');
-            item.appendChild(child);
-
-            item.ready();
-
-            assert.equal(RisePlayerConfiguration.Helpers.sendStartEvent.calledWith(child), true);
           });
 
           test('should set done when child sends "report-done"', () => {
