@@ -95,6 +95,11 @@
       suite('rise-playlist', () => {
         const sandbox = sinon.createSandbox();
 
+        setup(() => {
+          sandbox.stub(RisePlayerConfiguration.Helpers, 'getComponentAsync').resolves();
+          sandbox.stub(RisePlayerConfiguration.Helpers, 'sendStartEvent');
+        });
+
         teardown(() => sandbox.restore());
 
         suite('static items attribute', () => {
@@ -102,6 +107,8 @@
 
           setup(() => {
             element = fixture('StaticValueTestFixture');
+
+            Element.prototype.setProperties = sandbox.stub();
           });
 
           test('setting "items" attribute on the element works', (done) => {
@@ -209,6 +216,44 @@
 
               let imageElement = playlistItemElements[1].firstChild;
               assert.equal(imageElement.getAttribute('play-until-done'), 'true');
+
+              done();
+            });
+          });
+
+          test('setting properties for the component', (done) => {
+            flush(() => {
+              let playlistItemElements = element.children;
+              let embeddedTemplateElement = playlistItemElements[0].firstChild;
+
+              assert.isTrue(RisePlayerConfiguration.Helpers.getComponentAsync.calledWith(embeddedTemplateElement));
+              assert.isTrue(embeddedTemplateElement.setProperties.called);
+              assert.isTrue(embeddedTemplateElement.setProperties.calledWith({
+                templateId: "a429c126-598d-4251-9c0e-b49821056608"
+              }));
+
+              let imageElement = playlistItemElements[1].firstChild;
+              assert.isTrue(RisePlayerConfiguration.Helpers.getComponentAsync.calledWith(imageElement));
+              assert.isTrue(imageElement.setProperties.called);
+              assert.isTrue(imageElement.setProperties.calledWith({
+                metadata: {
+                  fileName: "sample-image.png"
+                }
+              }));
+
+              done();
+            });
+          });
+
+          test('should send start event', (done) => {
+            flush(() => {
+              let playlistItemElements = element.children;
+              let embeddedTemplateElement = playlistItemElements[0].firstChild;
+
+              assert.isTrue(RisePlayerConfiguration.Helpers.sendStartEvent.calledWith(embeddedTemplateElement));
+
+              let imageElement = playlistItemElements[1].firstChild;
+              assert.isTrue(RisePlayerConfiguration.Helpers.sendStartEvent.calledWith(imageElement));
 
               done();
             });
@@ -354,18 +399,6 @@
             });
 
             item.stop();
-          });
-
-          test('stop should "start" event to children', () => {
-            sandbox.stub(RisePlayerConfiguration.Helpers, 'sendStartEvent');
-
-            const item = new RisePlaylistItem();
-            const child = document.createElement('rise-embedded-template');
-            item.appendChild(child);
-
-            item.ready();
-
-            assert.equal(RisePlayerConfiguration.Helpers.sendStartEvent.calledWith(child), true);
           });
 
           test('should set done when child sends "report-done"', () => {

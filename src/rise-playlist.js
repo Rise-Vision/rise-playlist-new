@@ -57,8 +57,6 @@ export class RisePlaylistItem extends RiseElement {
 
       this.firstElementChild.addEventListener("rise-components-ready", () => this._setReady());
       this.firstElementChild.addEventListener("rise-components-error", () => this._isError = true);
-
-      RisePlayerConfiguration.Helpers.sendStartEvent( this.firstElementChild );
     }
   }
 
@@ -220,6 +218,22 @@ export default class RisePlaylist extends RiseElement {
     }
   }
 
+  _convertHyphensToCamelCase (string) {
+    return string.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
+  }
+
+  _setPropertiesNative( element, attributes ) {
+    const updatedAttributes = {};
+
+    Object.entries(attributes).forEach(([key, value]) => {
+      updatedAttributes[this._convertHyphensToCamelCase(key)] = value;
+    });
+
+    console.log(`Setting attributes component=${element.tagName.toLowerCase()}, id=${element.id} to value`, updatedAttributes);
+
+    element.setProperties(updatedAttributes);
+  }
+
   _itemsChanged(items) {
     this._removeAllItems();
 
@@ -258,9 +272,9 @@ export default class RisePlaylist extends RiseElement {
         element.setAttribute("play-until-done", item["play-until-done"]);
       }
 
-      Object.entries(item.element.attributes).forEach(([key, value]) => {
-        element.setAttribute(key, value);
-      });
+      RisePlayerConfiguration.Helpers.getComponentAsync( element )
+        .then( this._setPropertiesNative.bind( this, element, item.element.attributes ))
+        .then( RisePlayerConfiguration.Helpers.sendStartEvent.bind( null, element ));
 
       playListItem.appendChild(element);
 
