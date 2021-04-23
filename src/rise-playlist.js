@@ -254,6 +254,10 @@ export default class RisePlaylist extends RiseElement {
 
       element.setAttribute("id", playListItemId + "_" + item.element.tagName);
 
+      if (item["play-until-done"]) {
+        element.setAttribute("play-until-done", item["play-until-done"]);
+      }
+
       Object.entries(item.element.attributes).forEach(([key, value]) => {
         element.setAttribute(key, value);
       });
