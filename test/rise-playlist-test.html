@@ -17,10 +17,13 @@
       RisePlayerConfiguration = {
         Helpers: {
           isSharedSchedule: () => {},
+          getComponentAsync: () => {},
           sendStartEvent: () => {},
           isEditorPreview: () => false          
         }
       };
+
+      Element.prototype.setProperties = () => {};
     </script>
 
     <script type="module" src="../src/rise-playlist.js"></script>
@@ -106,9 +109,9 @@
           let element = null;
 
           setup(() => {
-            element = fixture('StaticValueTestFixture');
+            sandbox.spy(Element.prototype, 'setProperties');
 
-            Element.prototype.setProperties = sandbox.stub();
+            element = fixture('StaticValueTestFixture');
           });
 
           test('setting "items" attribute on the element works', (done) => {
