@@ -39,6 +39,19 @@
               "template-id": "a429c126-598d-4251-9c0e-b49821056608"
             }
           }
+        },
+        {
+          "duration": 3,
+          "transition-type": "fadeIn",
+          "play-until-done": true,
+          "element": {
+            "tagName": "rise-image",
+            "attributes": {
+              "metadata": {
+                "fileName": "sample-image.png"
+              }
+            }
+          }
         }]'>
         </rise-playlist>
       </template>
@@ -84,6 +97,8 @@
         const sandbox = sinon.createSandbox();
 
         setup(() => {
+          sandbox.stub(RisePlayerConfiguration.Helpers, 'getComponentAsync').resolves();
+          sandbox.stub(RisePlayerConfiguration.Helpers, 'sendStartEvent');
           sandbox.stub(RisePlayerConfiguration.Helpers, "isSharedSchedule").returns(false);
         });
 
@@ -94,12 +109,14 @@
 
           setup(() => {
             element = fixture('StaticValueTestFixture');
+
+            Element.prototype.setProperties = sandbox.stub();
           });
 
           test('setting "items" attribute on the element works', (done) => {
             flush(() => {
-              assert.equal(element.items.length, 1);
-              assert.equal(element.schedule.items.length, 1);
+              assert.equal(element.items.length, 2);
+              assert.equal(element.schedule.items.length, 2);
               done();
             });
           });
@@ -176,6 +193,56 @@
               assert.equal(playlistItemElements[1].id, "playlist1_2");
               let embeddedTemplateElement = playlistItemElements[0].firstChild;
               assert.equal(embeddedTemplateElement.id, "playlist1_1_rise-embedded-template");
+              done();
+            });
+          });
+
+          test('setting play-until-done attribute', (done) => {
+            flush(() => {
+              let playlistItemElements = element.children;
+              assert.equal(playlistItemElements.length, 2);
+              assert.isFalse(playlistItemElements[0].playUntilDone);
+              assert.isTrue(playlistItemElements[1].playUntilDone);
+
+              done();
+            });
+          });
+
+          test('setting play-until-done attribute for the component', (done) => {
+            flush(() => {
+              let playlistItemElements = element.children;
+              assert.equal(playlistItemElements.length, 2);
+
+              let embeddedTemplateElement = playlistItemElements[0].firstChild;
+              assert.isNull(embeddedTemplateElement.getAttribute('play-until-done'));
+
+              let imageElement = playlistItemElements[1].firstChild;
+              assert.equal(imageElement.getAttribute('play-until-done'), 'true');
+
+              done();
+            });
+          });
+
+          test('setting properties for the component', (done) => {
+            flush(() => {
+              let playlistItemElements = element.children;
+              let embeddedTemplateElement = playlistItemElements[0].firstChild;
+
+              assert.isTrue(RisePlayerConfiguration.Helpers.getComponentAsync.calledWith(embeddedTemplateElement));
+              assert.isTrue(embeddedTemplateElement.setProperties.called);
+              assert.isTrue(embeddedTemplateElement.setProperties.calledWith({
+                templateId: "a429c126-598d-4251-9c0e-b49821056608"
+              }));
+
+              let imageElement = playlistItemElements[1].firstChild;
+              assert.isTrue(RisePlayerConfiguration.Helpers.getComponentAsync.calledWith(imageElement));
+              assert.isTrue(imageElement.setProperties.called);
+              assert.isTrue(imageElement.setProperties.calledWith({
+                metadata: {
+                  fileName: "sample-image.png"
+                }
+              }));
+
               done();
             });
           });
@@ -323,8 +390,6 @@
           });
 
           test('stop should "start" event to children', () => {
-            sandbox.stub(RisePlayerConfiguration.Helpers, 'sendStartEvent');
-
             const item = new RisePlaylistItem();
             const child = document.createElement('rise-embedded-template');
             item.appendChild(child);
