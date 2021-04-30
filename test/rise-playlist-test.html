@@ -17,7 +17,6 @@
       RisePlayerConfiguration = {
         Helpers: {
           isSharedSchedule: () => {},
-          getComponentAsync: () => {},
           sendStartEvent: () => {},
           isEditorPreview: () => false          
         }
@@ -97,7 +96,6 @@
         const sandbox = sinon.createSandbox();
 
         setup(() => {
-          sandbox.stub(RisePlayerConfiguration.Helpers, 'getComponentAsync').resolves();
           sandbox.stub(RisePlayerConfiguration.Helpers, 'sendStartEvent');
           sandbox.stub(RisePlayerConfiguration.Helpers, "isSharedSchedule").returns(false);
         });
@@ -228,14 +226,12 @@
               let playlistItemElements = element.children;
               let embeddedTemplateElement = playlistItemElements[0].firstChild;
 
-              assert.isTrue(RisePlayerConfiguration.Helpers.getComponentAsync.calledWith(embeddedTemplateElement));
               assert.isTrue(embeddedTemplateElement.setProperties.called);
               assert.isTrue(embeddedTemplateElement.setProperties.calledWith({
                 templateId: "a429c126-598d-4251-9c0e-b49821056608"
               }));
 
               let imageElement = playlistItemElements[1].firstChild;
-              assert.isTrue(RisePlayerConfiguration.Helpers.getComponentAsync.calledWith(imageElement));
               assert.isTrue(imageElement.setProperties.called);
               assert.isTrue(imageElement.setProperties.calledWith({
                 metadata: {

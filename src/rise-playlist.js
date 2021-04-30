@@ -280,8 +280,7 @@ export default class RisePlaylist extends RiseElement {
         element.setAttribute("play-until-done", item["play-until-done"]);
       }
 
-      RisePlayerConfiguration.Helpers.getComponentAsync( element )
-        .then( this._setPropertiesNative.bind( this, element, item.element.attributes ));
+      this._setPropertiesNative( element, item.element.attributes );
 
       playListItem.appendChild(element);
 
