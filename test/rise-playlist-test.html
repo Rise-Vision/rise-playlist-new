@@ -16,10 +16,9 @@
     <script type="text/javascript">
       RisePlayerConfiguration = {
         Helpers: {
-          isSharedSchedule: () => {},
           getComponentAsync: () => {},
           sendStartEvent: () => {},
-          isEditorPreview: () => false          
+          isEditorPreview: () => false
         }
       };
 
@@ -100,7 +99,6 @@
 
         setup(() => {
           sandbox.stub(RisePlayerConfiguration.Helpers, 'sendStartEvent');
-          sandbox.stub(RisePlayerConfiguration.Helpers, "isSharedSchedule").returns(false);
         });
 
         teardown(() => sandbox.restore());
@@ -450,30 +448,6 @@
             child.dispatchEvent(new Event('rise-components-ready'));
 
             assert.equal(item.isNotReady(), false);
-          });
-
-          test('should skip unsupported components for Shared Schedules"', () => {
-            RisePlayerConfiguration.Helpers.isSharedSchedule.returns(true);
-
-            const item = new RisePlaylistItem();
-            const child = document.createElement('rise-video');
-            item.appendChild(child);
-
-            item.ready();
-
-            assert.isTrue(item.isError());
-          });
-
-          test('should handle allowed components for Shared Schedules"', () => {
-            RisePlayerConfiguration.Helpers.isSharedSchedule.returns(true);
-
-            const item = new RisePlaylistItem();
-            const child = document.createElement('rise-image');
-            item.appendChild(child);
-
-            item.ready();
-
-            assert.isFalse(item.isError());
           });
 
         });
