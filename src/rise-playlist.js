@@ -180,8 +180,7 @@ export default class RisePlaylist extends RiseElement {
   }
 
   shouldNotRender() {
-    return RisePlayerConfiguration && RisePlayerConfiguration.Helpers.isEditorPreview() &&
-      !this.hasAttribute( "non-editable" );
+    return false;
   }
 
   _handleRisePresentationPlay() {

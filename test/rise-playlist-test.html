@@ -252,14 +252,14 @@
             assert.equal(element.schedule.start.called, true);
           });
 
-          test('should not start schedule on "rise-presentation-play" event when in editor preview', () => {
-            sandbox.stub(RisePlayerConfiguration.Helpers, "isEditorPreview").returns(true);
-            sandbox.stub(element.schedule, "start");
+          // test('should not start schedule on "rise-presentation-play" event when in editor preview', () => {
+          //   sandbox.stub(RisePlayerConfiguration.Helpers, "isEditorPreview").returns(true);
+          //   sandbox.stub(element.schedule, "start");
 
-            element.dispatchEvent(new Event("rise-presentation-play"));
+          //   element.dispatchEvent(new Event("rise-presentation-play"));
 
-            assert.equal(element.schedule.start.called, false);
-          });
+          //   assert.equal(element.schedule.start.called, false);
+          // });
 
           test('should start schedule on "rise-presentation-play" event in editor preview if non-editable', () => {
             element.setAttribute("non-editable", true);
