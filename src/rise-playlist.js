@@ -291,10 +291,6 @@ export default class RisePlaylist extends RiseElement {
     }).forEach(element => {
       this.appendChild(element);
     });
-
-    if (this._isPlaying) {
-      this._startSchedule();
-    }
   }
 
   _logEvent(type, event, details = null, additionalFields) {
