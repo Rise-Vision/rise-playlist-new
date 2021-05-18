@@ -143,7 +143,7 @@ export default class RisePlaylist extends RiseElement {
           font-family: Helvetica, Arial, sans-serif;
         }
       </style>
-      <template is="dom-if" if="{{shouldNotRender()}}">
+      <template is="dom-if" if="{{_shouldNotRender(items)}}">
       <div id="previewPlaceholder">
         <svg viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <g id="1.-Atoms" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -179,8 +179,9 @@ export default class RisePlaylist extends RiseElement {
     this._setVersion( version );
   }
 
-  shouldNotRender() {
-    return false;
+  _shouldNotRender(items) {
+    return RisePlayerConfiguration && RisePlayerConfiguration.Helpers.isEditorPreview() &&
+      (!items || items.length === 0);
   }
 
   _handleRisePresentationPlay() {
@@ -196,8 +197,8 @@ export default class RisePlaylist extends RiseElement {
   }
 
   _startSchedule() {
-    if (!this.shouldNotRender()) {
-      this._isPlaying = true;
+    this._isPlaying = true;
+    if (!this._shouldNotRender(this.items)) {
       this.schedule.start();
     }
   }
@@ -281,6 +282,10 @@ export default class RisePlaylist extends RiseElement {
     }).forEach(element => {
       this.appendChild(element);
     });
+
+    if (this._isPlaying) {
+      this._startSchedule();
+    }
   }
 
   _logEvent(type, event, details = null, additionalFields) {
