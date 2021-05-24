@@ -54,7 +54,12 @@ This component receives the following list of attributes:
 - **items**: ( string / optional ): Playlist items.
 - **label**: ( string / optional ): An optional label key for the text that will appear in the template editor. See 'Labels' section above.
 - **non-editable**: ( empty / optional ): If present, it indicates this component is not available for customization in the template editor.
-
+- **allowed-components**: ( csv string / optional ): An optional CSV separated list of components that are available for selection in Apps. 
+    The following conditions apply:
+    - If the template is not using rise-init, the parameter is ignored and we only allow selecting Presentations.
+    - If the template is using rise-init, and the parameter is missing, blank, or *, we show all the components available.
+    - If the parameter contains a comma separate list of components, say `"rise-embedded-template,rise-video,rise-slides"` we only allow
+    selection of those 3 components.
 
 ### Events
 
