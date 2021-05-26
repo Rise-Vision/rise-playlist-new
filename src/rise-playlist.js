@@ -174,6 +174,7 @@ export default class RisePlaylist extends RiseElement {
     return {
       items: {
         type: Array,
+        value: null, // initialize as 'null' to trigger placeholder rendering check, as 'undefined' value does not trigger observers
         observer: "_itemsChanged"
       }
     }
@@ -190,7 +191,7 @@ export default class RisePlaylist extends RiseElement {
 
   _shouldNotRender(items) {
     return RisePlayerConfiguration && RisePlayerConfiguration.Helpers.isEditorPreview() &&
-      (!items || items.length === 0);
+      !this.hasAttribute( "non-editable" ) && (!items || items.length === 0);
   }
 
   _handleRisePresentationPlay() {
@@ -246,6 +247,11 @@ export default class RisePlaylist extends RiseElement {
   }
 
   _itemsChanged(items) {
+    // ignore default null value
+    if (items === null) {
+      return;
+    }
+
     this._removeAllItems();
 
     const validItems = items.filter(item => {
