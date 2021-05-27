@@ -250,9 +250,24 @@
             element.dispatchEvent(new Event("rise-presentation-play"));
 
             assert.equal(element.schedule.start.called, true);
+            assert.equal(element.$.previewPlaceholder.style.display, "none");
           });
 
-          test('should start schedule on "rise-presentation-play" event in editor preview if there are items', () => {
+          test('should show placeholder on "rise-presentation-play" in editor preview if there are no items', (done) => {
+            element.items = [];
+            sandbox.stub(RisePlayerConfiguration.Helpers, "isEditorPreview").returns(true);
+            sandbox.stub(element.schedule, "start");
+
+            flush(() => {
+              element.dispatchEvent(new Event("rise-presentation-play"));
+
+              assert.equal(element.schedule.start.called, false);
+              assert.equal(element.$.previewPlaceholder.style.display, "flex");
+              done();
+            });
+          });
+
+          test('should not show placeholder in editor preview if there are items', (done) => {
             element.items = [{
               "duration": 10,
               "element": {
@@ -263,30 +278,27 @@
             sandbox.stub(RisePlayerConfiguration.Helpers, "isEditorPreview").returns(true);
             sandbox.stub(element.schedule, "start");
 
-            element.dispatchEvent(new Event("rise-presentation-play"));
+            flush(() => {
+              element.dispatchEvent(new Event("rise-presentation-play"));
 
-            assert.equal(element.schedule.start.called, true);
+              assert.equal(element.schedule.start.called, true);
+              assert.equal(element.$.previewPlaceholder.style.display, "none");
+              done();
+            });
           });
 
-          test('should not start schedule on "rise-presentation-play" event when in editor preview if there are no items', () => {
-            element.items = [];
+          test('should not show placeholder in editor preview if there are default inline items', (done) => {
+            element = fixture("NestedElementsTestFixture");
             sandbox.stub(RisePlayerConfiguration.Helpers, "isEditorPreview").returns(true);
             sandbox.stub(element.schedule, "start");
 
-            element.dispatchEvent(new Event("rise-presentation-play"));
+            flush(() => {
+              element.dispatchEvent(new Event("rise-presentation-play"));
 
-            assert.equal(element.schedule.start.called, false);
-          });
-
-          test('should start schedule on "rise-presentation-play" event in editor preview if non-editable', () => {
-            element.setAttribute("non-editable", true);
-            element.items = [];
-            sandbox.stub(RisePlayerConfiguration.Helpers, "isEditorPreview").returns(true);
-            sandbox.stub(element.schedule, "start");
-
-            element.dispatchEvent(new Event("rise-presentation-play"));
-
-            assert.equal(element.schedule.start.called, true);
+              assert.equal(element.schedule.start.called, true);
+              assert.equal(element.$.previewPlaceholder.style.display, "none");
+              done();
+            });
           });
 
           test('should stop schedule on "rise-presentation-stop" event', () => {
@@ -323,10 +335,6 @@
 
           setup(() => {
             element = fixture('NestedElementsTestFixture');
-          });
-
-          test('"items" property is initialized as null, not undefined, to trigger placeholder check', () => {
-            assert.isTrue(element.items === null);
           });
 
           test('nested elements are parsed into schedule items', (done) => {

@@ -120,7 +120,7 @@ export default class RisePlaylist extends RiseElement {
           width: 100%;
         }
         #previewPlaceholder {
-          display: flex;
+          display: none;
           align-items: center;
           justify-content: center;
           flex-direction: column;
@@ -143,7 +143,6 @@ export default class RisePlaylist extends RiseElement {
           font-family: Helvetica, Arial, sans-serif;
         }
       </style>
-      <template is="dom-if" if="{{_shouldNotRender(items)}}">
       <div id="previewPlaceholder">
         <svg width="66px" height="58px" viewBox="0 0 66 58" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
           <title>47836883-D56E-4B18-9A67-FA2E3150D764@1x</title>
@@ -165,7 +164,6 @@ export default class RisePlaylist extends RiseElement {
         </svg>
         <h1>Playlist</h1>
       </div>
-      </template>
       <slot></slot>
     `;
   }
@@ -174,7 +172,6 @@ export default class RisePlaylist extends RiseElement {
     return {
       items: {
         type: Array,
-        value: null, // initialize as 'null' to trigger placeholder rendering check, as 'undefined' value does not trigger observers
         observer: "_itemsChanged"
       }
     }
@@ -189,9 +186,8 @@ export default class RisePlaylist extends RiseElement {
     this._setVersion( version );
   }
 
-  _shouldNotRender(items) {
-    return RisePlayerConfiguration && RisePlayerConfiguration.Helpers.isEditorPreview() &&
-      !this.hasAttribute( "non-editable" ) && (!items || items.length === 0);
+  _shouldNotRender() {
+    return RisePlayerConfiguration && RisePlayerConfiguration.Helpers.isEditorPreview() && this.schedule.items.length === 0;
   }
 
   _handleRisePresentationPlay() {
@@ -208,7 +204,10 @@ export default class RisePlaylist extends RiseElement {
 
   _startSchedule() {
     this._isPlaying = true;
-    if (!this._shouldNotRender(this.items)) {
+    if (this._shouldNotRender()) {
+      this.$.previewPlaceholder.style.display = "flex";
+    } else {
+      this.$.previewPlaceholder.style.display = "none";
       this.schedule.start();
     }
   }
@@ -247,11 +246,6 @@ export default class RisePlaylist extends RiseElement {
   }
 
   _itemsChanged(items) {
-    // ignore default null value
-    if (items === null) {
-      return;
-    }
-
     this._removeAllItems();
 
     const validItems = items.filter(item => {
